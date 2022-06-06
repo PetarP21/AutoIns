@@ -1,17 +1,24 @@
 package com.example.diplomna.ui
 
 import DatabaseHandler
+import android.app.ActionBar
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputFilter
-import android.text.InputFilter.AllCaps
+import android.text.InputType
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
+import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentEmployeeOperationsBinding
 import com.example.diplomna.models.Client
@@ -53,6 +60,7 @@ class EmployeeOperationsFragment : Fragment() {
         binding.addInsurance.setOnClickListener {
             addInsuranceRecord()
             setPINs(PINsAdapter)
+            setLicensePlates(licensePlatesAdapter)
         }
         binding.logout.setOnClickListener {
             SharedPref.clear()
@@ -62,10 +70,13 @@ class EmployeeOperationsFragment : Fragment() {
             val PIN = PINsAdapter.getItem(position) ?: ""
             setDataByPIN(PIN)
         }
+        binding.PINs.addTextChangedListener(textWatcherPIN)
         binding.licensePlates.setOnItemClickListener { _, _, position, _ ->
             val licensePlate = licensePlatesAdapter.getItem(position) ?: ""
             setDataByLicensePlate(licensePlate)
         }
+        binding.licensePlates.addTextChangedListener(textWatcherLicensePlate)
+
         setPINs(PINsAdapter)
         setLicensePlates(licensePlatesAdapter)
         return binding.root
@@ -88,8 +99,17 @@ class EmployeeOperationsFragment : Fragment() {
         val client = DatabaseHandler(requireContext()).getClientByPIN(PIN)
         with(binding){
             firstnameClient.editText?.setText(client.firstName)
+            firstnameClient.editText?.inputType = InputType.TYPE_NULL
+            firstnameClient.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
             middlenameClient.editText?.setText(client.middleName)
+            middlenameClient.editText?.inputType = InputType.TYPE_NULL
+            middlenameClient.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
             lastnameClient.editText?.setText(client.lastName)
+            lastnameClient.editText?.inputType = InputType.TYPE_NULL
+            lastnameClient.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
         }
     }
 
@@ -97,13 +117,36 @@ class EmployeeOperationsFragment : Fragment() {
         val vehicle = DatabaseHandler(requireContext()).getVehicleByLicensePlate(licensePlate,requireContext())
         with(binding){
             vinVehicle.editText?.setText(vehicle.VIN)
+            vinVehicle.editText?.inputType = InputType.TYPE_NULL
+            vinVehicle.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
             registrationCertificate.editText?.setText(vehicle.registrationCertificate)
+            registrationCertificate.editText?.inputType = InputType.TYPE_NULL
+            registrationCertificate.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
             engine.editText?.setText(vehicle.engine.toString())
+            engine.editText?.inputType = InputType.TYPE_NULL
+            engine.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
             typeVehicle.editText?.setText(getString(vehicle.type.id))
+            typeVehicle.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+            typesVehicle.dropDownHeight = 0
+
             brand.editText?.setText(vehicle.brand)
+            brand.editText?.inputType = InputType.TYPE_NULL
+            brand.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
             model.editText?.setText(vehicle.model)
+            model.editText?.inputType = InputType.TYPE_NULL
+            model.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
             date.editText?.setText(vehicle.date)
+            date.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
             price.editText?.setText(vehicle.price.toString())
+            price.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+
+            setVehicleTypes()
         }
     }
 
@@ -162,6 +205,65 @@ class EmployeeOperationsFragment : Fragment() {
             } else {
                 Toast.makeText(context, "Something is blank.", Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    private val textWatcherPIN = object : TextWatcher{
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int){
+            with(binding) {
+                firstnameClient.editText?.inputType = InputType.TYPE_CLASS_TEXT
+                firstnameClient.boxBackgroundColor =
+                    ContextCompat.getColor(requireContext(), R.color.white)
+
+                middlenameClient.editText?.inputType = InputType.TYPE_CLASS_TEXT
+                middlenameClient.boxBackgroundColor =
+                    ContextCompat.getColor(requireContext(), R.color.white)
+
+                lastnameClient.editText?.inputType = InputType.TYPE_CLASS_TEXT
+                lastnameClient.boxBackgroundColor =
+                    ContextCompat.getColor(requireContext(), R.color.white)
+            }
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+        }
+    }
+
+    private val textWatcherLicensePlate = object : TextWatcher{
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int){
+            with(binding) {
+                vinVehicle.editText?.inputType = InputType.TYPE_NULL
+                vinVehicle.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+
+                registrationCertificate.editText?.inputType = InputType.TYPE_NULL
+                registrationCertificate.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+
+                engine.editText?.inputType = InputType.TYPE_CLASS_NUMBER
+                engine.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+
+                typeVehicle.editText?.inputType = InputType.TYPE_NULL
+                typeVehicle.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+                typesVehicle.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
+
+                brand.editText?.inputType = InputType.TYPE_NULL
+                brand.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+
+                model.editText?.inputType = InputType.TYPE_NULL
+                model.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+
+                date.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+
+                date.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+            }
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
         }
     }
 }
