@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.MainFragment">
+
+        <Button
+            android:id="@+id/employersButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:backgroundTint="@color/orange"
+            android:text="@string/vhod"
+            app:layout_constraintBottom_toTopOf="@+id/checkButton"
+            app:layout_constraintEnd_toEndOf="@+id/logo"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/logo" />
+
+        <TextView
+            android:id="@+id/avto_zastrahovki"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_2x"
+            android:text="@string/zastrahovki"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/size_3x"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="@dimen/margin_1.5x"
+            android:layout_marginTop="@dimen/margin_1.5x"
+            android:layout_marginRight="@dimen/margin_1.5x"
+            android:src="@drawable/logo"
+            app:layout_constraintBottom_toTopOf="@+id/name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/avto_zastrahovki" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/company_name"
+            android:textColor="@color/white"
+            android:textSize="@dimen/size_3x"
+            app:layout_constraintEnd_toEndOf="@+id/avto_zastrahovki"
+            app:layout_constraintStart_toStartOf="@+id/avto_zastrahovki"
+            app:layout_constraintBottom_toTopOf="@id/employersButton" />
+
+        <Button
+            android:id="@+id/checkButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:backgroundTint="@color/orange"
+            android:text="@string/spravka"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/employersButton"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/employersButton" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

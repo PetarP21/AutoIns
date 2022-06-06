@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="size_0.5x">5sp</dimen>
+    <dimen name="size_x">10sp</dimen>
+    <dimen name="size_1.5x">15sp</dimen>
+    <dimen name="size_2x">20sp</dimen>
+    <dimen name="size_2.5x">25sp</dimen>
+    <dimen name="size_3x">30sp</dimen>
+    <dimen name="size_3.5x">35sp</dimen>
+    <dimen name="size_4x">40sp</dimen>
+    <dimen name="size_4.5x">45sp</dimen>
+    <dimen name="size_5x">50sp</dimen>
+    <dimen name="size_5.5x">55sp</dimen>
+    <dimen name="size_6x">60sp</dimen>
+    <dimen name="size_6.5x">65sp</dimen>
+    <dimen name="size_7x">70sp</dimen>
+    <dimen name="margin_0.5x">5dp</dimen>
+    <dimen name="margin_x">10dp</dimen>
+    <dimen name="margin_1.5x">15dp</dimen>
+    <dimen name="margin_2x">20dp</dimen>
+    <dimen name="margin_2.5x">25dp</dimen>
+    <dimen name="margin_3x">30dp</dimen>
+    <dimen name="margin_3.5x">35dp</dimen>
+    <dimen name="margin_4x">40dp</dimen>
+    <dimen name="margin_4.5x">45dp</dimen>
+    <dimen name="margin_5x">50dp</dimen>
+    <dimen name="margin_5.5x">55dp</dimen>
+    <dimen name="margin_6x">60dp</dimen>
+    <dimen name="margin_6.5x">65dp</dimen>
+    <dimen name="margin_7x">70dp</dimen>
+    <dimen name="margin_24x">240dp</dimen>
+</resources>

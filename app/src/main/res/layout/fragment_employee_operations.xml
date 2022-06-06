@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ui.EmployeeOperationsFragment">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_3x"
+                android:text="Застраховка
+                'Гражданска отговорност'"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/size_2.5x"
+                android:layout_marginLeft="@dimen/margin_x"
+                android:layout_marginRight="@dimen/margin_x"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/client_data"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_3x"
+                android:text="Данни на клиента:"
+                android:textColor="@color/white"
+                android:textSize="@dimen/size_2.5x"
+                android:layout_marginLeft="@dimen/margin_x"
+                android:layout_marginRight="@dimen/margin_x"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pin_client"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_3x"
+                android:layout_marginRight="@dimen/margin_3x"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="ЕГН*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:counterEnabled="true"
+                app:counterMaxLength="10"
+                app:counterTextColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/client_data">
+
+                <AutoCompleteTextView
+                    android:id="@+id/PINs"
+                    android:inputType="number"
+                    android:maxLength="10"
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:completionThreshold="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/firstname_client"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_3x"
+                android:layout_marginRight="@dimen/margin_3x"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="Име*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pin_client">
+
+                <AutoCompleteTextView
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/middlename_client"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Презиме*"
+                android:layout_marginTop="@dimen/margin_2x"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:counterTextColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/firstname_client"
+                app:layout_constraintStart_toStartOf="@id/firstname_client"
+                app:layout_constraintTop_toBottomOf="@+id/firstname_client">
+
+                <AutoCompleteTextView
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lastname_client"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_2x"
+                android:hint="Фамилия*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/middlename_client">
+
+                <AutoCompleteTextView
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/vehicle_data"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_3x"
+                android:text="Данни на МПС:"
+                android:textColor="@color/white"
+                android:textSize="@dimen/size_2.5x"
+                android:layout_marginLeft="@dimen/margin_x"
+                android:layout_marginRight="@dimen/margin_x"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lastname_client" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/license_plate"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="Регистрационен номер*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:counterEnabled="true"
+                app:counterMaxLength="8"
+                app:counterTextColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/vehicle_data">
+
+                <AutoCompleteTextView
+                    android:id="@+id/licensePlates"
+                    android:completionThreshold="1"
+                    android:maxLength="8"
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/vin_vehicle"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="Идентификационен номер (VIN)*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:counterEnabled="true"
+                app:counterMaxLength="17"
+                app:counterTextColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/license_plate">
+
+                <AutoCompleteTextView
+                    android:maxLength="17"
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/registration_certificate"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="№ на свидетелство за регистрация*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:counterEnabled="true"
+                app:counterMaxLength="9"
+                app:counterTextColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/vin_vehicle">
+
+                <AutoCompleteTextView
+                    android:maxLength="9"
+                    android:inputType="number"
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/engine"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="Обем на двигателя (cm³)*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:counterEnabled="true"
+                app:counterMaxLength="4"
+                app:counterTextColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/registration_certificate">
+
+                <AutoCompleteTextView
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/type_vehicle"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="Вид МПС*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/engine">
+
+                <AutoCompleteTextView
+                    android:id="@+id/types_vehicle"
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:inputType="none"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/brand"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="Марка на МПС*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/type_vehicle">
+
+                <AutoCompleteTextView
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/model"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="Модел на МПС*"
+                android:textColorHint="@color/orange"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/brand">
+
+                <AutoCompleteTextView
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/date"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="Дата на сключване*"
+                android:textColorHint="@color/orange"
+                android:visibility="visible"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/model">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/date_editText"
+                    android:inputType="none"
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/price"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_x"
+                android:hint="Застрахователна премия*"
+                android:textColorHint="@color/orange"
+                android:visibility="visible"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/orange"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                app:layout_constraintStart_toStartOf="@id/middlename_client"
+                app:layout_constraintTop_toBottomOf="@+id/date">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:inputType="none"
+                    android:paddingTop="@dimen/margin_2x"
+                    android:paddingLeft="@dimen/margin_1.5x"
+                    android:paddingRight="@dimen/margin_1.5x"
+                    android:paddingBottom="@dimen/margin_1.5x"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <Button
+                android:id="@+id/add_insurance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/orange"
+                android:text="Добави застраховка"
+                android:textSize="@dimen/size_1.5x"
+                android:layout_marginTop="@dimen/margin_2x"
+                app:layout_constraintTop_toBottomOf="@+id/price"
+                app:layout_constraintStart_toStartOf="@id/firstname_client"
+                app:layout_constraintEnd_toEndOf="@id/firstname_client" />
+            <Button
+                android:id="@+id/view_insurances"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/orange"
+                android:text="Всички застраховки"
+                android:textSize="@dimen/size_1.5x"
+                app:layout_constraintTop_toBottomOf="@+id/add_insurance"
+                app:layout_constraintStart_toStartOf="@id/firstname_client"
+                app:layout_constraintEnd_toEndOf="@id/firstname_client" />
+
+            <Button
+                android:id="@+id/logout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/orange"
+                android:text="Изход"
+                android:textSize="@dimen/size_1.5x"
+                app:layout_constraintTop_toBottomOf="@+id/view_insurances"
+                app:layout_constraintStart_toStartOf="@id/firstname_client"
+                app:layout_constraintEnd_toEndOf="@id/firstname_client" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>

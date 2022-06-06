@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Diplomna</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="splash_fragment">Splash fragment</string>
+    <string name="welcome">Welcome!</string>
+    <string name="vhod">Вход за служители</string>
+    <string name="zastrahovki">Автомобилни застраховки</string>
+    <string name="company_name">AutoIns</string>
+    <string name="spravka">Провери застраховка на автомобил</string>
+    <string name="driving_license">Регистрационен номер*</string>
+    <string name="search">Търси</string>
+    <string name="nickname">Потребителско име*</string>
+    <string name="password">Парола*</string>
+    <string name="login">Влез</string>
+    <string name="test">ТЕСТ/TEST</string>
+    <string name="add_employee">Добави служител</string>
+    <string name="update_employee">Редактирай служител</string>
+    <string name="delete_employee">Изтрий служител</string>
+    <string name="car">Лек автомобил</string>
+    <string name="truck">Товарен автомобил</string>
+    <string name="motorcycle">Мотоциклет</string>
+</resources>
