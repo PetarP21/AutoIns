@@ -179,7 +179,10 @@ class EmployeeOperationsFragment : Fragment() {
             val databaseHandler = DatabaseHandler(requireContext())
             if(pin.isNotEmpty() && firstName.isNotEmpty() && middleName.isNotEmpty() && lastName.isNotEmpty()
                 && licencePlate.isNotEmpty() && VIN.isNotEmpty() && regCertificate.isNotEmpty()
-                && engineStr.isNotEmpty() && brand.isNotEmpty() && model.isNotEmpty() && date.isNotEmpty() && price.isNotEmpty()) {
+                && engineStr.isNotEmpty() && brand.isNotEmpty() && model.isNotEmpty() && date.isNotEmpty()
+                && price.isNotEmpty()) {
+                val vehicle = databaseHandler.getVehicleByLicensePlate(licencePlate,requireContext())
+                if(!vehicle.isValid){
                 val statusClient = databaseHandler.addClient(
                     Client(0,pin,firstName,middleName,lastName)
                 )
@@ -201,6 +204,9 @@ class EmployeeOperationsFragment : Fragment() {
                         binding.model.editText?.text?.clear()
                         binding.date.editText?.text?.clear()
                     }
+                }
+                } else {
+                    Toast.makeText(context, "Автомобил с рег.номер $licencePlate вече има валидна застраховка.", Toast.LENGTH_LONG).show()
                 }
             } else {
                 Toast.makeText(context, "Something is blank.", Toast.LENGTH_LONG).show()
