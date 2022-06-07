@@ -388,6 +388,20 @@ class DatabaseHandler(context: Context) :
         return Client(id,PIN,firstName,middleName,lastName)
     }
 
+    fun getIsValidByLicensePlate(licensePlate: String): Boolean {
+        val args = listOf(licensePlate).toTypedArray()
+        val pinQuery = "SELECT $KEY_VALID FROM $VEHICLE_TABLE WHERE $KEY_LICENSE_PLATE_VEHICLE=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(pinQuery, args)
+        var isValid = false
+        if(cursor.moveToFirst()){
+            do {
+                if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+            } while (cursor.moveToNext())
+        }
+        return isValid
+    }
+
     fun getVehicleByLicensePlate(licensePlate: String,context: Context): Vehicle {
         val args = listOf(licensePlate).toTypedArray()
         val pinQuery = "SELECT * FROM $VEHICLE_TABLE WHERE $KEY_LICENSE_PLATE_VEHICLE=?"

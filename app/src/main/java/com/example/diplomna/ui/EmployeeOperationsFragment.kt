@@ -1,24 +1,21 @@
 package com.example.diplomna.ui
 
 import DatabaseHandler
-import android.app.ActionBar
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentEmployeeOperationsBinding
 import com.example.diplomna.models.Client
@@ -27,6 +24,7 @@ import com.example.diplomna.models.VehicleTypes
 import com.example.diplomna.util.SharedPref
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 
 /*
 1 - бутон за профил както при другите админ операциите
@@ -34,7 +32,7 @@ import java.util.*
 
  */
 class EmployeeOperationsFragment : Fragment() {
-    private lateinit var binding : FragmentEmployeeOperationsBinding
+    private lateinit var binding: FragmentEmployeeOperationsBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,18 +43,19 @@ class EmployeeOperationsFragment : Fragment() {
             container,
             false
         )
+
         val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
         val currentDate = simpleDateFormat.format(Date())
         val PINs = DatabaseHandler(requireContext()).getPINs().toTypedArray()
         val PINsAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, PINs)
 
         val licensePlates = DatabaseHandler(requireContext()).getLicensePlates().toTypedArray()
-        val licensePlatesAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, licensePlates)
+        val licensePlatesAdapter =
+            ArrayAdapter(requireContext(), R.layout.dropdown_item, licensePlates)
 
         binding.licensePlates.filters += InputFilter.AllCaps()
 
         binding.dateEditText.setText(currentDate)
-        binding.price.editText?.setText("100")
         binding.addInsurance.setOnClickListener {
             addInsuranceRecord()
             setPINs(PINsAdapter)
@@ -76,6 +75,7 @@ class EmployeeOperationsFragment : Fragment() {
             setDataByLicensePlate(licensePlate)
         }
         binding.licensePlates.addTextChangedListener(textWatcherLicensePlate)
+        binding.engineTextView.addTextChangedListener(textWatcherEngine)
 
         setPINs(PINsAdapter)
         setLicensePlates(licensePlatesAdapter)
@@ -87,79 +87,89 @@ class EmployeeOperationsFragment : Fragment() {
         setVehicleTypes()
     }
 
-    private fun setPINs(adapter:  ArrayAdapter<String>){
+    private fun setPINs(adapter: ArrayAdapter<String>) {
         binding.PINs.setAdapter(adapter)
     }
 
-    private fun setLicensePlates(adapter: ArrayAdapter<String>){
+    private fun setLicensePlates(adapter: ArrayAdapter<String>) {
         binding.licensePlates.setAdapter(adapter)
     }
 
-    private fun setDataByPIN(PIN : String){
+    private fun setDataByPIN(PIN: String) {
         val client = DatabaseHandler(requireContext()).getClientByPIN(PIN)
-        with(binding){
+        with(binding) {
             firstnameClient.editText?.setText(client.firstName)
             firstnameClient.editText?.inputType = InputType.TYPE_NULL
-            firstnameClient.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+            firstnameClient.boxBackgroundColor =
+                ContextCompat.getColor(requireContext(), R.color.light_gray)
 
             middlenameClient.editText?.setText(client.middleName)
             middlenameClient.editText?.inputType = InputType.TYPE_NULL
-            middlenameClient.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+            middlenameClient.boxBackgroundColor =
+                ContextCompat.getColor(requireContext(), R.color.light_gray)
 
             lastnameClient.editText?.setText(client.lastName)
             lastnameClient.editText?.inputType = InputType.TYPE_NULL
-            lastnameClient.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
-
-        }
-    }
-
-    private fun setDataByLicensePlate(licensePlate : String){
-        val vehicle = DatabaseHandler(requireContext()).getVehicleByLicensePlate(licensePlate,requireContext())
-        with(binding){
-            vinVehicle.editText?.setText(vehicle.VIN)
-            vinVehicle.editText?.inputType = InputType.TYPE_NULL
-            vinVehicle.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
-
-            registrationCertificate.editText?.setText(vehicle.registrationCertificate)
-            registrationCertificate.editText?.inputType = InputType.TYPE_NULL
-            registrationCertificate.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
-
-            engine.editText?.setText(vehicle.engine.toString())
-            engine.editText?.inputType = InputType.TYPE_NULL
-            engine.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
-
-            typeVehicle.editText?.setText(getString(vehicle.type.id))
-            typeVehicle.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
-            typesVehicle.dropDownHeight = 0
-
-            brand.editText?.setText(vehicle.brand)
-            brand.editText?.inputType = InputType.TYPE_NULL
-            brand.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
-
-            model.editText?.setText(vehicle.model)
-            model.editText?.inputType = InputType.TYPE_NULL
-            model.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
-
-            date.editText?.setText(vehicle.date)
-            date.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
-
-            price.editText?.setText(vehicle.price.toString())
-            price.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.light_gray)
+            lastnameClient.boxBackgroundColor =
+                ContextCompat.getColor(requireContext(), R.color.light_gray)
 
             setVehicleTypes()
         }
     }
 
-    private fun setVehicleTypes(){
+    private fun setDataByLicensePlate(licensePlate: String) {
+        val vehicle = DatabaseHandler(requireContext()).getVehicleByLicensePlate(
+            licensePlate,
+            requireContext()
+        )
+        with(binding) {
+            vinVehicle.editText?.setText(vehicle.VIN)
+            vinVehicle.editText?.inputType = InputType.TYPE_NULL
+            vinVehicle.boxBackgroundColor =
+                ContextCompat.getColor(requireContext(), R.color.light_gray)
+
+            registrationCertificate.editText?.setText(vehicle.registrationCertificate)
+            registrationCertificate.editText?.inputType = InputType.TYPE_NULL
+            registrationCertificate.boxBackgroundColor =
+                ContextCompat.getColor(requireContext(), R.color.light_gray)
+
+            engine.editText?.setText(vehicle.engine.toString())
+            engine.editText?.inputType = InputType.TYPE_NULL
+            engine.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.light_gray)
+
+            typeVehicle.editText?.setText(getString(vehicle.type.id))
+            typeVehicle.boxBackgroundColor =
+                ContextCompat.getColor(requireContext(), R.color.light_gray)
+            typesVehicle.dropDownHeight = 0
+
+            brand.editText?.setText(vehicle.brand)
+            brand.editText?.inputType = InputType.TYPE_NULL
+            brand.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.light_gray)
+
+            model.editText?.setText(vehicle.model)
+            model.editText?.inputType = InputType.TYPE_NULL
+            model.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.light_gray)
+
+            date.editText?.setText(vehicle.date)
+            date.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.light_gray)
+
+            price.editText?.setText(vehicle.price.toString())
+            price.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.light_gray)
+
+            setVehicleTypes()
+        }
+    }
+
+    private fun setVehicleTypes() {
         val vehicleTypes = VehicleTypes.values().map { it.id }.map { getString(it) }
-        val arrayAdapter = ArrayAdapter(requireContext(),R.layout.dropdown_item,vehicleTypes)
-        with(binding.typesVehicle){
+        val arrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, vehicleTypes)
+        with(binding.typesVehicle) {
             setAdapter(arrayAdapter)
             setText((arrayAdapter.getItem(0).toString()), false)
         }
     }
 
-    private fun addInsuranceRecord(){
+    private fun addInsuranceRecord() {
         with(binding) {
             val pin = pinClient.editText?.text.toString()
             val firstName = firstnameClient.editText?.text.toString()
@@ -170,64 +180,163 @@ class EmployeeOperationsFragment : Fragment() {
             val VIN = vinVehicle.editText?.text.toString()
             val regCertificate = registrationCertificate.editText?.text.toString()
             val engineStr = engine.editText?.text.toString()
-            val vehicleType = VehicleTypes.values().first { getString(it.id) == typeVehicle.editText?.text.toString() }
+            val vehicleType = VehicleTypes.values()
+                .first { getString(it.id) == typeVehicle.editText?.text.toString() }
             val brand = brand.editText?.text.toString()
             val model = model.editText?.text.toString()
             val date = date.editText?.text.toString()
             val price = price.editText?.text.toString()
 
             val databaseHandler = DatabaseHandler(requireContext())
-            if(pin.isNotEmpty() && firstName.isNotEmpty() && middleName.isNotEmpty() && lastName.isNotEmpty()
+            if (pin.isNotEmpty() && firstName.isNotEmpty() && middleName.isNotEmpty() && lastName.isNotEmpty()
                 && licencePlate.isNotEmpty() && VIN.isNotEmpty() && regCertificate.isNotEmpty()
                 && engineStr.isNotEmpty() && brand.isNotEmpty() && model.isNotEmpty() && date.isNotEmpty()
-                && price.isNotEmpty()) {
-                val vehicle = databaseHandler.getVehicleByLicensePlate(licencePlate,requireContext())
-                if(!vehicle.isValid){
-                val statusClient = databaseHandler.addClient(
-                    Client(0,pin,firstName,middleName,lastName)
-                )
-                val statusVehicle = databaseHandler.addVehicle(requireContext(),
-                    Vehicle(0,databaseHandler.getIdByPIN(pin),licencePlate,VIN,regCertificate,engineStr.toInt(),vehicleType,brand,model,date,price.toDouble(),true)
-                )
-                if(statusClient > -1 && statusVehicle > -1) {
-                    Toast.makeText(context,"Record saved", Toast.LENGTH_LONG).show()
-                    with(binding) {
-                        pinClient.editText?.text?.clear()
-                        firstnameClient.editText?.text?.clear()
-                        middlenameClient.editText?.text?.clear()
-                        lastnameClient.editText?.text?.clear()
-                        licensePlate.editText?.text?.clear()
-                        vinVehicle.editText?.text?.clear()
-                        registrationCertificate.editText?.text?.clear()
-                        engine.editText?.text?.clear()
-                        binding.brand.editText?.text?.clear()
-                        binding.model.editText?.text?.clear()
-                        binding.date.editText?.text?.clear()
+                && price.isNotEmpty()
+            ) {
+                var isPINValid = false
+                var isLicensePlateValid = false
+                var isVINValid = false
+                var isRegCertificateValid = false
+
+                val patternLicensePlate = Pattern.compile("[ABEKMHOPCTYX]{1,2}[0-9]{4}[ABEKMHOPCTYX]{2}")
+                if (patternLicensePlate.matcher(licencePlate).matches()) {
+                    if (!databaseHandler.getIsValidByLicensePlate(licencePlate)) {
+                        isLicensePlateValid = true
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Автомобил с рег.номер $licencePlate вече има валидна застраховка.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(context, "Невалиден регистрационен номер.", Toast.LENGTH_LONG).show()
+                }
+
+                if(VIN.count() == 17){
+                    isVINValid = true
+                } else {
+                    binding.vinVehicle.editText?.error = "Недостатъчен брой символи."
+                }
+
+                if(regCertificate.count() == 9){
+                    isRegCertificateValid = true
+                } else {
+                    binding.registrationCertificate.editText?.error = "Недостатъчен брой символи."
+                }
+
+                if(isPINValid && isLicensePlateValid && isRegCertificateValid && isVINValid){
+                    val statusClient = databaseHandler.addClient(
+                        Client(0, pin, firstName, middleName, lastName)
+                    )
+                    val statusVehicle = databaseHandler.addVehicle(
+                        requireContext(),
+                        Vehicle(
+                            0,
+                            databaseHandler.getIdByPIN(pin),
+                            licencePlate,
+                            VIN,
+                            regCertificate,
+                            engineStr.toInt(),
+                            vehicleType,
+                            brand,
+                            model,
+                            date,
+                            price.toDouble(),
+                            true
+                        )
+                    )
+                    if (statusClient > -1 && statusVehicle > -1) {
+                        Toast.makeText(context, "Успешно добавена застраховка.", Toast.LENGTH_LONG).show()
+                        with(binding) {
+                            pinClient.editText?.text?.clear()
+                            firstnameClient.editText?.text?.clear()
+                            middlenameClient.editText?.text?.clear()
+                            lastnameClient.editText?.text?.clear()
+                            licensePlate.editText?.text?.clear()
+                            vinVehicle.editText?.text?.clear()
+                            registrationCertificate.editText?.text?.clear()
+                            engine.editText?.text?.clear()
+                            binding.brand.editText?.text?.clear()
+                            binding.model.editText?.text?.clear()
+                            binding.date.editText?.text?.clear()
+                        }
                     }
                 }
-                } else {
-                    Toast.makeText(context, "Автомобил с рег.номер $licencePlate вече има валидна застраховка.", Toast.LENGTH_LONG).show()
-                }
             } else {
-                Toast.makeText(context, "Something is blank.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Не всички полета са попълнени.", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    private val textWatcherPIN = object : TextWatcher{
+    private fun calcAge(PIN: String): Int {
+        var ageInteger = 0
+        if (PIN.count() == 10) {
+            var year = PIN.substring(0, 2).toInt()
+            var month = PIN.substring(2, 4).toInt()
+            val day = PIN.substring(4, 6).toInt()
+            if (month > 40) {
+                year += 2000
+                month -= 40
+            } else {
+                year += 1900
+            }
+            val dobCalendar = Calendar.getInstance()
+            dobCalendar.set(year, month, day)
+            val today = Calendar.getInstance()
+            ageInteger = today.get(Calendar.YEAR) - dobCalendar.get(Calendar.YEAR);
+            if (today.get(Calendar.MONTH) == dobCalendar.get(Calendar.MONTH)) {
+                if (today.get(Calendar.DAY_OF_MONTH) < dobCalendar.get(Calendar.DAY_OF_MONTH)) {
+                    ageInteger -= 1;
+                }
+            } else if (today.get(Calendar.MONTH) < dobCalendar.get(Calendar.MONTH)) {
+                ageInteger -= 1;
+            }
+        }
+        return ageInteger
+    }
+
+    private fun calcPrice(engine: Int, age: Int): Double {
+        var price: Double = if (engine < 1200) {
+            250.0
+        } else if (engine < 1600) {
+            252.0
+        } else if (engine < 1800) {
+            260.0
+        } else if (engine < 2000) {
+            272.0
+        } else if (engine < 2500) {
+            334.0
+        } else 361.0
+
+        if (age < 25) {
+            price += 0.8 * price
+        }
+        return price
+    }
+
+    private val textWatcherPIN = object : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
         }
 
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int){
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             with(binding) {
+                if (firstnameClient.editText?.inputType == InputType.TYPE_NULL) {
+                    firstnameClient.editText?.text?.clear()
+                }
                 firstnameClient.editText?.inputType = InputType.TYPE_CLASS_TEXT
                 firstnameClient.boxBackgroundColor =
                     ContextCompat.getColor(requireContext(), R.color.white)
-
+                if (middlenameClient.editText?.inputType == InputType.TYPE_NULL) {
+                    middlenameClient.editText?.text?.clear()
+                }
                 middlenameClient.editText?.inputType = InputType.TYPE_CLASS_TEXT
                 middlenameClient.boxBackgroundColor =
                     ContextCompat.getColor(requireContext(), R.color.white)
 
+                if (lastnameClient.editText?.inputType == InputType.TYPE_NULL) {
+                    lastnameClient.editText?.text?.clear()
+                }
                 lastnameClient.editText?.inputType = InputType.TYPE_CLASS_TEXT
                 lastnameClient.boxBackgroundColor =
                     ContextCompat.getColor(requireContext(), R.color.white)
@@ -238,34 +347,70 @@ class EmployeeOperationsFragment : Fragment() {
         }
     }
 
-    private val textWatcherLicensePlate = object : TextWatcher{
+    private val textWatcherLicensePlate = object : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
         }
 
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int){
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             with(binding) {
-                vinVehicle.editText?.inputType = InputType.TYPE_NULL
-                vinVehicle.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+                if (vinVehicle.editText?.inputType == InputType.TYPE_NULL) {
+                    vinVehicle.editText?.text?.clear()
+                }
+                vinVehicle.editText?.inputType = InputType.TYPE_CLASS_TEXT
+                vinVehicle.boxBackgroundColor =
+                    ContextCompat.getColor(requireContext(), R.color.white)
 
-                registrationCertificate.editText?.inputType = InputType.TYPE_NULL
-                registrationCertificate.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+                if (registrationCertificate.editText?.inputType == InputType.TYPE_NULL) {
+                    registrationCertificate.editText?.text?.clear()
+                }
+                registrationCertificate.editText?.inputType = InputType.TYPE_CLASS_NUMBER
+                registrationCertificate.boxBackgroundColor =
+                    ContextCompat.getColor(requireContext(), R.color.white)
 
+                if (engine.editText?.inputType == InputType.TYPE_NULL) {
+                    engine.editText?.text?.clear()
+                }
                 engine.editText?.inputType = InputType.TYPE_CLASS_NUMBER
-                engine.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+                engine.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.white)
 
-                typeVehicle.editText?.inputType = InputType.TYPE_NULL
-                typeVehicle.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+                typeVehicle.boxBackgroundColor =
+                    ContextCompat.getColor(requireContext(), R.color.white)
                 typesVehicle.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
 
-                brand.editText?.inputType = InputType.TYPE_NULL
-                brand.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+                if (brand.editText?.inputType == InputType.TYPE_NULL) {
+                    brand.editText?.text?.clear()
+                }
+                brand.editText?.inputType = InputType.TYPE_CLASS_TEXT
+                brand.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.white)
 
-                model.editText?.inputType = InputType.TYPE_NULL
-                model.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+                if (model.editText?.inputType == InputType.TYPE_NULL) {
+                    model.editText?.text?.clear()
+                }
+                model.editText?.inputType = InputType.TYPE_CLASS_TEXT
+                model.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.white)
 
-                date.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+                date.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.white)
+                price.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.white)
+            }
+        }
 
-                date.boxBackgroundColor = ContextCompat.getColor(requireContext(),R.color.white)
+        override fun afterTextChanged(p0: Editable?) {
+        }
+    }
+
+    private val textWatcherEngine = object : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            val PIN = binding.pinClient.editText?.text.toString()
+            val age = calcAge(PIN)
+            val engine = binding.engine.editText?.text.toString()
+            if (engine != "") {
+                val price = calcPrice(engine.toInt(), age)
+                binding.price.editText?.setText(price.toString())
+            } else {
+                binding.price.editText?.setText("0")
             }
         }
 
