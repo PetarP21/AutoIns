@@ -13,7 +13,7 @@ import com.example.diplomna.R
 import com.example.diplomna.models.Employee
 import com.example.diplomna.ui.ShowEmployersFragment
 
-class ItemAdapter(val context: Context, val items: ArrayList<Employee>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>(){
+class EmployeeAdapter(val context: Context, val items: ArrayList<Employee>) : RecyclerView.Adapter<EmployeeAdapter.ViewHolder>(){
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nickname: TextView
@@ -27,7 +27,7 @@ class ItemAdapter(val context: Context, val items: ArrayList<Employee>) : Recycl
             nickname = view.findViewById(R.id.nickname)
             firstName = view.findViewById(R.id.firstname)
             lastName = view.findViewById(R.id.lastname)
-            deleteButton = view.findViewById(R.id.delete)
+            deleteButton = view.findViewById(R.id.delete_ins)
             llMain = view.findViewById(R.id.llMain)
         }
     }

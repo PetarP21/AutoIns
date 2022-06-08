@@ -57,6 +57,12 @@
         <action
             android:id="@+id/action_employeeOperationsFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_employeeOperationsFragment_to_showClientsFragment"
+            app:destination="@id/showClientsFragment" />
+        <action
+            android:id="@+id/action_employeeOperationsFragment_to_showInsurancesFragment"
+            app:destination="@id/showInsurancesFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminOperationsFragment"
@@ -77,4 +83,14 @@
         android:name="com.example.diplomna.ui.ShowEmployersFragment"
         android:label="fragment_show_employers"
         tools:layout="@layout/fragment_show_employers" />
+    <fragment
+        android:id="@+id/showClientsFragment"
+        android:name="com.example.diplomna.ui.ShowClientsFragment"
+        android:label="fragment_show_clients"
+        tools:layout="@layout/fragment_show_clients" />
+    <fragment
+        android:id="@+id/showInsurancesFragment"
+        android:name="com.example.diplomna.ui.ShowInsurancesFragment"
+        android:label="fragment_show_insurances"
+        tools:layout="@layout/fragment_show_insurances" />
 </navigation>

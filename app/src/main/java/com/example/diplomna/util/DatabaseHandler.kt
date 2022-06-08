@@ -91,8 +91,6 @@ class DatabaseHandler(context: Context) :
                 + KEY_DATE + " TEXT,"
                 + KEY_PRICE + " REAL,"
                 + KEY_VALID + " INTEGER,"
-                // дата на сключване и премия
-                // FOREIGN KEY(orderId) REFERENCES order(Id),
                 + " FOREIGN KEY(" + KEY_CLIENT_ID + ") REFERENCES " + CLIENT_TABLE + "(" + KEY_ID + ")" + ")")
         db?.execSQL(CREATE_VEHICLE_TABLE)
 
@@ -388,6 +386,27 @@ class DatabaseHandler(context: Context) :
         return Client(id,PIN,firstName,middleName,lastName)
     }
 
+    fun getClientById(id: Int): Client {
+        val args = listOf(id.toString()).toTypedArray()
+        val pinQuery = "SELECT * FROM $CLIENT_TABLE WHERE $KEY_ID=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(pinQuery, args)
+        var pin = ""
+        var firstName = ""
+        var middleName = ""
+        var lastName = ""
+        if(cursor.moveToFirst()){
+            do {
+                pin = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PIN_CLIENT))
+                firstName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_FIRSTNAME_CLIENT))
+                middleName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MIDDLENAME_CLIENT))
+                lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_CLIENT))
+
+            } while (cursor.moveToNext())
+        }
+        return Client(id,pin,firstName,middleName,lastName)
+    }
+
     fun getIsValidByLicensePlate(licensePlate: String): Boolean {
         val args = listOf(licensePlate).toTypedArray()
         val pinQuery = "SELECT $KEY_VALID FROM $VEHICLE_TABLE WHERE $KEY_LICENSE_PLATE_VEHICLE=?"
@@ -485,6 +504,58 @@ class DatabaseHandler(context: Context) :
             } while (cursor.moveToNext())
         }
         return licensePlates
+    }
+
+    fun getAllVehicles(context: Context) : ArrayList<Vehicle> {
+        val vehicleList = ArrayList<Vehicle>()
+
+        val selectQuery = "SELECT * FROM $VEHICLE_TABLE"
+
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        } catch (e: SQLException){
+            db.execSQL(selectQuery)
+            return ArrayList()
+        }
+
+        var id: Int
+        var clientId: Int
+        var licensePlate: String
+        var VIN: String
+        var registrationCertificate: String
+        var engine: Int
+        var type: String
+        var brand: String
+        var model: String
+        var date: String
+        var price: Double
+        var isValid = false
+
+        if(cursor.moveToFirst()){
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
+                clientId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_CLIENT_ID))
+                licensePlate = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LICENSE_PLATE_VEHICLE))
+                VIN = cursor.getString(cursor.getColumnIndexOrThrow(KEY_VIN_VEHICLE))
+                registrationCertificate = cursor.getString(cursor.getColumnIndexOrThrow(KEY_REGISTRATION_CERTIFICATE_VEHICLE))
+                engine = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENGINE_VEHICLE))
+                type = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE))
+                brand = cursor.getString(cursor.getColumnIndexOrThrow(KEY_BRAND_VEHICLE))
+                model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
+                date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
+                price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
+                if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+
+                val typeVehicle = VehicleTypes.values().first { context.getString(it.id) == type }
+                val vehicle = Vehicle(id,clientId,licensePlate,VIN,registrationCertificate,engine,typeVehicle,brand,model,date,price, isValid)
+                vehicleList.add(vehicle)
+
+            } while (cursor.moveToNext())
+        }
+        return vehicleList
     }
 
     fun checkLogin(nickname : String, password : String) : Boolean{

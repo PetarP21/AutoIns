@@ -65,6 +65,9 @@ class EmployeeOperationsFragment : Fragment() {
             SharedPref.clear()
             findNavController().navigate(R.id.action_employeeOperationsFragment_to_loginFragment)
         }
+        binding.viewInsurances.setOnClickListener {
+            findNavController().navigate(R.id.action_employeeOperationsFragment_to_showInsurancesFragment)
+        }
         binding.PINs.setOnItemClickListener { _, _, position, _ ->
             val PIN = PINsAdapter.getItem(position) ?: ""
             setDataByPIN(PIN)
@@ -211,6 +214,13 @@ class EmployeeOperationsFragment : Fragment() {
                     }
                 } else {
                     Toast.makeText(context, "Невалиден регистрационен номер.", Toast.LENGTH_LONG).show()
+                }
+
+                val patternPIN = Pattern.compile("[0-9]{2}[0145][0-9][0-3][0-9]{5}")
+                if(patternPIN.matcher(pin).matches()){
+                    isPINValid = true
+                } else {
+                    binding.PINs.error = "Невалидно ЕГН"
                 }
 
                 if(VIN.count() == 17){

@@ -45,7 +45,7 @@
         tools:text="Фамилия" />
 
     <ImageView
-        android:id="@+id/delete"
+        android:id="@+id/delete_ins"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="center"
