@@ -63,6 +63,7 @@
                 <AutoCompleteTextView
                     android:id="@+id/PINs"
                     android:inputType="number"
+                    android:textColor="@color/black"
                     android:maxLength="10"
                     android:paddingTop="@dimen/margin_2x"
                     android:paddingLeft="@dimen/margin_1.5x"
@@ -95,6 +96,7 @@
                     android:paddingLeft="@dimen/margin_1.5x"
                     android:paddingRight="@dimen/margin_1.5x"
                     android:paddingBottom="@dimen/margin_1.5x"
+                    android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -115,6 +117,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/firstname_client">
 
                 <AutoCompleteTextView
+                    android:textColor="@color/black"
                     android:paddingTop="@dimen/margin_2x"
                     android:paddingLeft="@dimen/margin_1.5x"
                     android:paddingRight="@dimen/margin_1.5x"
@@ -139,6 +142,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/middlename_client">
 
                 <AutoCompleteTextView
+                    android:textColor="@color/black"
                     android:paddingTop="@dimen/margin_2x"
                     android:paddingLeft="@dimen/margin_1.5x"
                     android:paddingRight="@dimen/margin_1.5x"
@@ -183,6 +187,7 @@
                     android:id="@+id/licensePlates"
                     android:completionThreshold="1"
                     android:maxLength="8"
+                    android:textColor="@color/black"
                     android:paddingTop="@dimen/margin_2x"
                     android:paddingLeft="@dimen/margin_1.5x"
                     android:paddingRight="@dimen/margin_1.5x"
@@ -210,6 +215,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/license_plate">
 
                 <AutoCompleteTextView
+                    android:textColor="@color/black"
                     android:maxLength="17"
                     android:paddingTop="@dimen/margin_2x"
                     android:paddingLeft="@dimen/margin_1.5x"
@@ -238,6 +244,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/vin_vehicle">
 
                 <AutoCompleteTextView
+                    android:textColor="@color/black"
                     android:maxLength="9"
                     android:inputType="number"
                     android:paddingTop="@dimen/margin_2x"
@@ -267,6 +274,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/registration_certificate">
 
                 <AutoCompleteTextView
+                    android:textColor="@color/black"
                     android:id="@+id/engine_textView"
                     android:inputType="number"
                     android:maxLength="4"
@@ -294,6 +302,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/engine">
 
                 <AutoCompleteTextView
+                    android:textColor="@color/black"
                     android:id="@+id/types_vehicle"
                     android:paddingTop="@dimen/margin_2x"
                     android:paddingLeft="@dimen/margin_1.5x"
@@ -320,6 +329,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/type_vehicle">
 
                 <AutoCompleteTextView
+                    android:textColor="@color/black"
                     android:paddingTop="@dimen/margin_2x"
                     android:paddingLeft="@dimen/margin_1.5x"
                     android:paddingRight="@dimen/margin_1.5x"
@@ -344,6 +354,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/brand">
 
                 <AutoCompleteTextView
+                    android:textColor="@color/black"
                     android:paddingTop="@dimen/margin_2x"
                     android:paddingLeft="@dimen/margin_1.5x"
                     android:paddingRight="@dimen/margin_1.5x"
@@ -369,6 +380,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/model">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:textColor="@color/black"
                     android:id="@+id/date_editText"
                     android:inputType="none"
                     android:paddingTop="@dimen/margin_2x"
@@ -396,6 +408,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/date">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:textColor="@color/black"
                     android:inputType="none"
                     android:paddingTop="@dimen/margin_2x"
                     android:paddingLeft="@dimen/margin_1.5x"
