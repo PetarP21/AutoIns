@@ -29,7 +29,6 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
         val price: TextView
         val isValid: TextView
         val deleteButton: ImageView
-        val editButton: ImageView
 
         init {
             licensePlate = view.findViewById(R.id.license_plate_textView)
@@ -44,7 +43,6 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
             price = view.findViewById(R.id.price_textView)
             isValid = view.findViewById(R.id.isValid_textView)
             deleteButton = view.findViewById(R.id.delete_ins)
-            editButton = view.findViewById(R.id.edit_ins)
         }
     }
 
@@ -80,15 +78,6 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
         }
 
         holder.deleteButton.setOnClickListener {
-            if (context is MainActivity) {
-                val navFragment = context.supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.childFragmentManager?.fragments?.first()
-                if(navFragment is ShowInsurancesFragment){
-                    navFragment.deleteInsuranceRecordAlertDialog(item)
-                }
-            }
-        }
-
-        holder.editButton.setOnClickListener {
             if (context is MainActivity) {
                 val navFragment = context.supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.childFragmentManager?.fragments?.first()
                 if(navFragment is ShowInsurancesFragment){
