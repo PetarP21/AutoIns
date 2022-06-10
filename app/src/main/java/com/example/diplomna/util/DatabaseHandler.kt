@@ -27,7 +27,9 @@ class DatabaseHandler(context: Context) :
 
         private const val KEY_NICKNAME_EMP = "nickname"
         private const val KEY_FIRSTNAME_EMP = "first_name"
+        private const val KEY_MIDDLENAME_EMP = "middle_name"
         private const val KEY_LASTNAME_EMP = "last_name"
+        private const val KEY_EMAIL_EMP = "email"
         private const val KEY_POSITION_EMP = "position"
         private const val KEY_SALT_EMP = "salt"
         private const val KEY_PASSWORD_EMP = "password"
@@ -64,7 +66,9 @@ class DatabaseHandler(context: Context) :
                 + KEY_ID + " INTEGER PRIMARY KEY,"
                 + KEY_NICKNAME_EMP + " TEXT,"
                 + KEY_FIRSTNAME_EMP + " TEXT,"
+                + KEY_MIDDLENAME_EMP + " TEXT,"
                 + KEY_LASTNAME_EMP + " TEXT,"
+                + KEY_EMAIL_EMP+ " TEXT,"
                 + KEY_POSITION_EMP + " TEXT,"
                 + KEY_SALT_EMP + " TEXT,"
                 + KEY_PASSWORD_EMP + " TEXT" + ")")
@@ -113,6 +117,8 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_NICKNAME_EMP, emp.nickname)
         contentValues.put(KEY_FIRSTNAME_EMP, emp.firstName)
         contentValues.put(KEY_LASTNAME_EMP, emp.lastName)
+        contentValues.put(KEY_MIDDLENAME_EMP, emp.middleName)
+        contentValues.put(KEY_EMAIL_EMP,emp.email)
         contentValues.put(KEY_POSITION_EMP,emp.position)
         contentValues.put(KEY_SALT_EMP,emp.salt)
         contentValues.put(KEY_PASSWORD_EMP,emp.password)
@@ -133,7 +139,9 @@ class DatabaseHandler(context: Context) :
         val contentValues = ContentValues()
         contentValues.put(KEY_NICKNAME_EMP, emp.nickname) // EmpModelClass Name
         contentValues.put(KEY_FIRSTNAME_EMP, emp.firstName) // EmpModelClass Email
+        contentValues.put(KEY_MIDDLENAME_EMP, emp.middleName)
         contentValues.put(KEY_LASTNAME_EMP, emp.lastName) // EmpModelClass Email
+        contentValues.put(KEY_EMAIL_EMP, emp.email)
         contentValues.put(KEY_POSITION_EMP,emp.position)
         contentValues.put(KEY_SALT_EMP,emp.salt)
         contentValues.put(KEY_PASSWORD_EMP,emp.password)
@@ -276,7 +284,9 @@ class DatabaseHandler(context: Context) :
         var id: Int
         var nickname: String
         var firstName: String
+        var middleName: String
         var lastName: String
+        var email: String
         var position: String
         var salt: String
         var password: String
@@ -286,12 +296,14 @@ class DatabaseHandler(context: Context) :
                 id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
                 nickname = cursor.getString(cursor.getColumnIndexOrThrow(KEY_NICKNAME_EMP))
                 firstName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_FIRSTNAME_EMP))
+                middleName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MIDDLENAME_EMP))
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
+                email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
                 position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
                 salt = cursor.getString(cursor.getColumnIndexOrThrow(KEY_SALT_EMP))
                 password = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD_EMP))
 
-                val emp = Employee(id = id,nickname = nickname,firstName = firstName, lastName = lastName,position = position,salt = salt, password = password)
+                val emp = Employee(id = id,nickname = nickname,firstName = firstName,middleName = middleName, lastName = lastName,email = email,position = position,salt = salt, password = password)
                 empList.add(emp)
 
             } while (cursor.moveToNext())

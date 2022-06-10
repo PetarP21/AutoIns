@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         val databaseHandler = DatabaseHandler(this)
         val nicknames = databaseHandler.getNicknames()
         val salt = SHA256.salt()
-        val admin = Employee(0,"admin","admin","admin","Админ",salt,SHA256.encrypt(salt+"admin"))
+        val admin = Employee(0,"admin","admin","admin","admin","admin","Админ",salt,SHA256.encrypt(salt+"admin"))
         if(admin.nickname !in nicknames){
             databaseHandler.addEmployee(admin)
         }

@@ -42,12 +42,14 @@ class AdminOperationsFragment : Fragment() {
     private fun addRecord() {
         val nickname = binding.usernameEmployee.editText?.text.toString()
         val firstName = binding.firstnameEmployee.editText?.text.toString()
+        val middleName = binding.middlenameEmployee.editText?.text.toString()
         val lastName = binding.lastnameEmployee.editText?.text.toString()
+        val email = binding.emailEmployee.editText?.text.toString()
         val position = getCheckedRadioButton().text.toString()
         val databaseHandler = DatabaseHandler(requireContext())
         if(nickname.isNotEmpty() && firstName.isNotEmpty() && lastName.isNotEmpty() && position.isNotEmpty()) {
             val salt = SHA256.salt()
-            val status = databaseHandler.addEmployee(Employee(0,nickname, firstName, lastName,position,salt,SHA256.encrypt(salt+"admin")))
+            val status = databaseHandler.addEmployee(Employee(0,nickname, firstName,middleName,lastName,email,position,salt,SHA256.encrypt(salt+"admin")))
             if(status > -1) {
                 Toast.makeText(context,"Record saved",Toast.LENGTH_LONG).show()
                 binding.usernameEmployee.editText?.text?.clear()

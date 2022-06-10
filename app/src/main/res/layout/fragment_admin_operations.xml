@@ -11,14 +11,16 @@
         tools:context=".ui.AdminOperationsFragment">
 
         <TextView
-            android:id="@+id/position_employee_textView"
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Позиция:"
+            android:layout_margin="@dimen/margin_3x"
+            android:text="Добавяне на служители"
             android:textColor="@color/white"
-            android:textSize="@dimen/size_2x"
-            app:layout_constraintStart_toStartOf="@+id/username_employee"
-            app:layout_constraintTop_toBottomOf="@id/lastname_employee" />
+            android:textSize="@dimen/size_3x"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/username_employee"
@@ -69,12 +71,12 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lastname_employee"
+            android:id="@+id/middlename_employee"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:hint="Презиме*"
             android:layout_marginTop="@dimen/margin_2x"
-            android:hint="Фамилия*"
             android:textColorHint="@color/orange"
             app:boxBackgroundColor="@color/white"
             app:boxStrokeColor="@color/orange"
@@ -91,6 +93,91 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lastname_employee"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_2x"
+            android:hint="Фамилия*"
+            android:textColorHint="@color/orange"
+            app:boxBackgroundColor="@color/white"
+            app:boxStrokeColor="@color/orange"
+            app:counterEnabled="true"
+            app:counterMaxLength="100"
+            app:counterTextColor="@color/orange"
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="@id/middlename_employee"
+            app:layout_constraintStart_toStartOf="@id/middlename_employee"
+            app:layout_constraintTop_toBottomOf="@+id/middlename_employee">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/email_employee"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_2x"
+            android:hint="Имейл*"
+            android:textColorHint="@color/orange"
+            app:boxBackgroundColor="@color/white"
+            app:boxStrokeColor="@color/orange"
+            app:counterEnabled="true"
+            app:counterMaxLength="100"
+            app:counterTextColor="@color/orange"
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="@id/lastname_employee"
+            app:layout_constraintStart_toStartOf="@id/lastname_employee"
+            app:layout_constraintTop_toBottomOf="@+id/lastname_employee">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/position_employee_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Позиция:"
+            android:textColor="@color/white"
+            android:textSize="@dimen/size_2x"
+            app:layout_constraintStart_toStartOf="@+id/username_employee"
+            app:layout_constraintTop_toBottomOf="@id/email_employee" />
+
+        <RadioGroup
+            android:id="@+id/position_radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/position_employee_textView"
+            app:layout_constraintTop_toBottomOf="@id/position_employee_textView">
+
+            <RadioButton
+                android:id="@+id/employee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Застраховател"
+                android:checked="true"
+                android:buttonTint="@color/orange"
+                android:textColor="@color/white"
+                android:textSize="@dimen/size_2x" />
+
+            <RadioButton
+                android:id="@+id/admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Админ"
+                android:buttonTint="@color/orange"
+                android:textColor="@color/white"
+                android:textSize="@dimen/size_2x" />
+        </RadioGroup>
 
         <Button
             android:id="@+id/add_employee"
@@ -124,45 +211,6 @@
             app:layout_constraintTop_toBottomOf="@+id/view_employers"
             app:layout_constraintStart_toStartOf="@id/username_employee"
             app:layout_constraintEnd_toEndOf="@id/username_employee" />
-
-        <RadioGroup
-            android:id="@+id/position_radioGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/position_employee_textView"
-            app:layout_constraintTop_toBottomOf="@id/position_employee_textView">
-
-            <RadioButton
-                android:id="@+id/employee"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Застраховател"
-                android:checked="true"
-                android:buttonTint="@color/orange"
-                android:textColor="@color/white"
-                android:textSize="@dimen/size_2x" />
-
-            <RadioButton
-                android:id="@+id/admin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Админ"
-                android:buttonTint="@color/orange"
-                android:textColor="@color/white"
-                android:textSize="@dimen/size_2x" />
-        </RadioGroup>
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_3x"
-            android:text="Добавяне на служители"
-            android:textColor="@color/white"
-            android:textSize="@dimen/size_3x"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

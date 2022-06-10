@@ -74,12 +74,12 @@ class ShowEmployersFragment : Fragment(){
     /**
      * Method is used to show the Alert Dialog.
      */
-    fun deleteRecordAlertDialog(empModelClass: Employee) {
+    fun deleteRecordAlertDialog(employee: Employee) {
         val builder = AlertDialog.Builder(requireContext())
         //set title for alert dialog
         builder.setTitle("Delete Record")
         //set message for alert dialog
-        builder.setMessage("Are you sure you wants to delete ${empModelClass.nickname}.")
+        builder.setMessage("Are you sure you wants to delete ${employee.nickname}.")
         builder.setIcon(android.R.drawable.ic_dialog_alert)
 
         //performing positive action
@@ -88,7 +88,8 @@ class ShowEmployersFragment : Fragment(){
             //creating the instance of DatabaseHandler class
             val databaseHandler = DatabaseHandler(requireContext())
             //calling the deleteEmployee method of DatabaseHandler class to delete record
-            val status = databaseHandler.deleteEmployee(Employee(empModelClass.id, "", "","","","",""))
+            val status = databaseHandler.deleteEmployee(Employee(employee.id, employee.nickname, employee.firstName,
+                employee.middleName,employee.lastName,employee.email,employee.position,employee.salt,employee.password))
             if (status > -1) {
                 Toast.makeText(
                     context,
