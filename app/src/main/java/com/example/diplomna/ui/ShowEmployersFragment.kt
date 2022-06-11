@@ -2,18 +2,21 @@ package com.example.diplomna.ui
 
 import DatabaseHandler
 import android.app.AlertDialog
+import android.app.Dialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentShowEmployersBinding
+import com.example.diplomna.models.Client
 import com.example.diplomna.models.Employee
+import com.example.diplomna.models.VehicleTypes
 import com.example.diplomna.util.EmployeeAdapter
 
 
@@ -21,8 +24,8 @@ import com.example.diplomna.util.EmployeeAdapter
 служителя да остава логнат докато не излезе от профила си
 Ще има бутонче на профил, през който можеш да излизаш от профила си
 */
-class ShowEmployersFragment : Fragment(){
-    private lateinit var binding : FragmentShowEmployersBinding
+class ShowEmployersFragment : Fragment() {
+    private lateinit var binding: FragmentShowEmployersBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -74,7 +77,7 @@ class ShowEmployersFragment : Fragment(){
     /**
      * Method is used to show the Alert Dialog.
      */
-    fun deleteRecordAlertDialog(employee: Employee) {
+    fun deleteEmployeeRecordAlertDialog(employee: Employee) {
         val builder = AlertDialog.Builder(requireContext())
         //set title for alert dialog
         builder.setTitle("Delete Record")
@@ -88,8 +91,19 @@ class ShowEmployersFragment : Fragment(){
             //creating the instance of DatabaseHandler class
             val databaseHandler = DatabaseHandler(requireContext())
             //calling the deleteEmployee method of DatabaseHandler class to delete record
-            val status = databaseHandler.deleteEmployee(Employee(employee.id, employee.nickname, employee.firstName,
-                employee.middleName,employee.lastName,employee.email,employee.position,employee.salt,employee.password))
+            val status = databaseHandler.deleteEmployee(
+                Employee(
+                    employee.id,
+                    employee.nickname,
+                    employee.firstName,
+                    employee.middleName,
+                    employee.lastName,
+                    employee.email,
+                    employee.position,
+                    employee.salt,
+                    employee.password
+                )
+            )
             if (status > -1) {
                 Toast.makeText(
                     context,
@@ -111,5 +125,75 @@ class ShowEmployersFragment : Fragment(){
         // Set other dialog properties
         alertDialog.setCancelable(false) // Will not allow user to cancel after clicking on remaining screen area.
         alertDialog.show()  // show the dialog to UI
+    }
+
+    fun updateEmployeeRecordDialog(employee: Employee) {
+        val updateDialog = Dialog(requireContext(), R.style.Theme_Dialog)
+        updateDialog.setCancelable(false)
+        /*Set the screen content from a layout resource.
+         The resource will be inflated, adding all top-level views to the screen.*/
+        updateDialog.setContentView(R.layout.employee_update)
+
+        val nickname = updateDialog.findViewById<EditText>(R.id.nickname_editText_update_emp)
+        val firstName = updateDialog.findViewById<EditText>(R.id.firstName_editText_update_emp)
+        val middleName = updateDialog.findViewById<EditText>(R.id.middleName_editText_update_emp)
+        val lastName = updateDialog.findViewById<EditText>(R.id.lastName_editText_update_emp)
+        val email = updateDialog.findViewById<EditText>(R.id.email_editText_update_emp)
+        val updateButton = updateDialog.findViewById<TextView>(R.id.employee_update_textView)
+        val cancelButton = updateDialog.findViewById<TextView>(R.id.employee_cancel_textView)
+
+
+        nickname.setText(employee.nickname)
+        firstName.setText(employee.firstName)
+        middleName.setText(employee.middleName)
+        lastName.setText(employee.lastName)
+        email.setText(employee.email)
+
+        updateButton.setOnClickListener {
+
+            val nickname = nickname.text.toString()
+            val firstName = firstName.text.toString()
+            val middleName = middleName.text.toString()
+            val lastName = lastName.text.toString()
+            val email = email.text.toString()
+
+            val databaseHandler = DatabaseHandler(requireContext())
+
+            if (nickname.isNotEmpty() && firstName.isNotEmpty() && middleName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()) {
+                val status =
+                    databaseHandler.updateEmployee(
+                        Employee(
+                            employee.id,
+                            nickname,
+                            firstName,
+                            middleName,
+                            lastName,
+                            email,
+                            employee.position,
+                            employee.salt,
+                            employee.password
+                        )
+                    )
+                if (status > -1) {
+                    Toast.makeText(requireContext(), "Записът е редактиран.", Toast.LENGTH_LONG)
+                        .show()
+
+                    setupListOfDataIntoRecyclerView()
+
+                    updateDialog.dismiss() // Dialog will be dismissed
+                }
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Не всички полета са попълнени.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+        cancelButton.setOnClickListener {
+            updateDialog.dismiss()
+        }
+        //Start the dialog and display it on screen.
+        updateDialog.show()
     }
 }

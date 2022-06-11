@@ -21,6 +21,7 @@ import com.example.diplomna.databinding.FragmentEmployeeOperationsBinding
 import com.example.diplomna.models.Client
 import com.example.diplomna.models.Vehicle
 import com.example.diplomna.models.VehicleTypes
+import com.example.diplomna.util.BaseFragment
 import com.example.diplomna.util.SharedPref
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,7 +32,7 @@ import java.util.regex.Pattern
 2 - 2 бутона за "добавяне на застраховка" и "преглед на всички застраховки"
 
  */
-class EmployeeOperationsFragment : Fragment() {
+class EmployeeOperationsFragment : BaseFragment() {
     private lateinit var binding: FragmentEmployeeOperationsBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,6 +69,10 @@ class EmployeeOperationsFragment : Fragment() {
         binding.viewInsurances.setOnClickListener {
             findNavController().navigate(R.id.action_employeeOperationsFragment_to_showInsurancesFragment)
         }
+        binding.viewClients.setOnClickListener {
+            findNavController().navigate(R.id.action_employeeOperationsFragment_to_showClientsFragment)
+        }
+
         binding.PINs.setOnItemClickListener { _, _, position, _ ->
             val PIN = PINsAdapter.getItem(position) ?: ""
             setDataByPIN(PIN)
@@ -218,9 +223,14 @@ class EmployeeOperationsFragment : Fragment() {
 
                 val patternPIN = Pattern.compile("[0-9]{2}[0145][0-9][0-3][0-9]{5}")
                 if(patternPIN.matcher(pin).matches()){
-                    isPINValid = true
+                    val client = databaseHandler.getClientByPIN(pin)
+                    if("" == client.PIN || (pin == client.PIN && firstName == client.firstName && middleName == client.middleName && lastName == client.lastName)) {
+                        isPINValid = true
+                    } else {
+                        Toast.makeText(context,  "Вече съществува клиент с ЕГН: $pin", Toast.LENGTH_LONG).show()
+                    }
                 } else {
-                    binding.PINs.error = "Невалидно ЕГН"
+                    Toast.makeText(context, "Невалидно ЕГН.", Toast.LENGTH_LONG).show()
                 }
 
                 if(VIN.count() == 17){
@@ -269,7 +279,6 @@ class EmployeeOperationsFragment : Fragment() {
                             engine.editText?.text?.clear()
                             binding.brand.editText?.text?.clear()
                             binding.model.editText?.text?.clear()
-                            binding.date.editText?.text?.clear()
                         }
                     }
                 }
@@ -277,52 +286,6 @@ class EmployeeOperationsFragment : Fragment() {
                 Toast.makeText(context, "Не всички полета са попълнени.", Toast.LENGTH_LONG).show()
             }
         }
-    }
-
-    private fun calcAge(PIN: String): Int {
-        var ageInteger = 0
-        if (PIN.count() == 10) {
-            var year = PIN.substring(0, 2).toInt()
-            var month = PIN.substring(2, 4).toInt()
-            val day = PIN.substring(4, 6).toInt()
-            if (month > 40) {
-                year += 2000
-                month -= 40
-            } else {
-                year += 1900
-            }
-            val dobCalendar = Calendar.getInstance()
-            dobCalendar.set(year, month, day)
-            val today = Calendar.getInstance()
-            ageInteger = today.get(Calendar.YEAR) - dobCalendar.get(Calendar.YEAR);
-            if (today.get(Calendar.MONTH) == dobCalendar.get(Calendar.MONTH)) {
-                if (today.get(Calendar.DAY_OF_MONTH) < dobCalendar.get(Calendar.DAY_OF_MONTH)) {
-                    ageInteger -= 1;
-                }
-            } else if (today.get(Calendar.MONTH) < dobCalendar.get(Calendar.MONTH)) {
-                ageInteger -= 1;
-            }
-        }
-        return ageInteger
-    }
-
-    private fun calcPrice(engine: Int, age: Int): Double {
-        var price: Double = if (engine < 1200) {
-            250.0
-        } else if (engine < 1600) {
-            252.0
-        } else if (engine < 1800) {
-            260.0
-        } else if (engine < 2000) {
-            272.0
-        } else if (engine < 2500) {
-            334.0
-        } else 361.0
-
-        if (age < 25) {
-            price += 0.8 * price
-        }
-        return price
     }
 
     private val textWatcherPIN = object : TextWatcher {

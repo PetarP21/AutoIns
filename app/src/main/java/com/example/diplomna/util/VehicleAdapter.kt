@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -49,7 +48,7 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VehicleAdapter.ViewHolder {
         return ViewHolder(
             LayoutInflater.from(context).inflate(
-                R.layout.item_card,
+                R.layout.vehicle_card,
                 parent,
                 false
             )

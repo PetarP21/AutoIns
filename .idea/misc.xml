@@ -9,8 +9,11 @@
         <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/drawable/ic_delete_24.xml" value="0.2105" />
         <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/drawable/rounded_license_plate.xml" value="0.2105" />
         <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/layout/activity_main.xml" value="0.18125" />
+        <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/layout/client_card.xml" value="0.253125" />
+        <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/layout/client_update.xml" value="0.253125" />
         <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/layout/dialog_update.xml" value="0.253125" />
         <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/layout/dropdown_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/layout/employee_update.xml" value="0.2076923076923077" />
         <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/layout/fragment_admin_operations.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/layout/fragment_check.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Sector G/AndroidStudioProjects/Diplomna/app/src/main/res/layout/fragment_employee_operations.xml" value="0.25416666666666665" />

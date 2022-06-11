@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             val hours = minutes / 60
             val days = hours / 24
             if(days>365){
-                db.updateVehicle(Vehicle(vehicle.id,vehicle.clientId,vehicle.licencePlate,
+                db.updateVehicle(this,Vehicle(vehicle.id,vehicle.clientId,vehicle.licencePlate,
                     vehicle.VIN,vehicle.registrationCertificate,
                     vehicle.engine,vehicle.type,vehicle.brand,vehicle.model,
                     vehicle.date,vehicle.price,isValid = false))

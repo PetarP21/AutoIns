@@ -440,6 +440,16 @@
                 app:layout_constraintTop_toBottomOf="@+id/add_insurance"
                 app:layout_constraintStart_toStartOf="@id/firstname_client"
                 app:layout_constraintEnd_toEndOf="@id/firstname_client" />
+            <Button
+                android:id="@+id/view_clients"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/orange"
+                android:text="Всички клиенти"
+                android:textSize="@dimen/size_1.5x"
+                app:layout_constraintTop_toBottomOf="@+id/view_insurances"
+                app:layout_constraintStart_toStartOf="@id/firstname_client"
+                app:layout_constraintEnd_toEndOf="@id/firstname_client" />
 
             <Button
                 android:id="@+id/logout"
@@ -448,7 +458,7 @@
                 android:backgroundTint="@color/orange"
                 android:text="Изход"
                 android:textSize="@dimen/size_1.5x"
-                app:layout_constraintTop_toBottomOf="@+id/view_insurances"
+                app:layout_constraintTop_toBottomOf="@+id/view_clients"
                 app:layout_constraintStart_toStartOf="@id/firstname_client"
                 app:layout_constraintEnd_toEndOf="@id/firstname_client" />
 
