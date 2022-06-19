@@ -2,7 +2,10 @@ package com.example.diplomna
 
 import DatabaseHandler
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import com.example.diplomna.models.Employee
 import com.example.diplomna.models.Vehicle
@@ -26,7 +29,8 @@ class MainActivity : AppCompatActivity() {
         val databaseHandler = DatabaseHandler(this)
         val nicknames = databaseHandler.getNicknames()
         val salt = SHA256.salt()
-        val admin = Employee(0,"admin","admin","admin","admin","admin","Админ",salt,SHA256.encrypt(salt+"admin"))
+        val admin = Employee(0,"admin","admin","admin","admin","admin","Админ",
+            "admin",SHA256.encrypt(salt+"admin"),salt,SHA256.encrypt(salt+"admin"))
         if(admin.nickname !in nicknames){
             databaseHandler.addEmployee(admin)
         }

@@ -6,10 +6,7 @@ import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.diplomna.R
-import com.example.diplomna.models.Client
-import com.example.diplomna.models.Employee
-import com.example.diplomna.models.Vehicle
-import com.example.diplomna.models.VehicleTypes
+import com.example.diplomna.models.*
 import kotlin.math.PI
 
 //creating the database logic, extending the SQLiteOpenHelper base class
@@ -38,6 +35,8 @@ class DatabaseHandler(context: Context) :
         private const val KEY_LASTNAME_EMP = "last_name"
         private const val KEY_EMAIL_EMP = "email"
         private const val KEY_POSITION_EMP = "position"
+        private const val KEY_SECURITY_QUESTION_EMP = "security_question"
+        private const val KEY_SECURITY_ANSWER_EMP = "security_answer"
         private const val KEY_SALT_EMP = "salt"
         private const val KEY_PASSWORD_EMP = "password"
 
@@ -77,6 +76,8 @@ class DatabaseHandler(context: Context) :
                 + KEY_LASTNAME_EMP + " TEXT,"
                 + KEY_EMAIL_EMP+ " TEXT,"
                 + KEY_POSITION_EMP + " TEXT,"
+                + KEY_SECURITY_QUESTION_EMP + " TEXT,"
+                + KEY_SECURITY_ANSWER_EMP + " TEXT,"
                 + KEY_SALT_EMP + " TEXT,"
                 + KEY_PASSWORD_EMP + " TEXT" + ")")
         db?.execSQL(CREATE_EMPLOYEE_TABLE)
@@ -130,6 +131,8 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_MIDDLENAME_EMP, emp.middleName)
         contentValues.put(KEY_EMAIL_EMP,emp.email)
         contentValues.put(KEY_POSITION_EMP,emp.position)
+        contentValues.put(KEY_SECURITY_QUESTION_EMP,emp.securityQuestion)
+        contentValues.put(KEY_SECURITY_ANSWER_EMP,emp.securityAnswer)
         contentValues.put(KEY_SALT_EMP,emp.salt)
         contentValues.put(KEY_PASSWORD_EMP,emp.password)
 
@@ -153,6 +156,8 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_LASTNAME_EMP, emp.lastName) // EmpModelClass Email
         contentValues.put(KEY_EMAIL_EMP, emp.email)
         contentValues.put(KEY_POSITION_EMP,emp.position)
+        contentValues.put(KEY_SECURITY_QUESTION_EMP,emp.securityQuestion)
+        contentValues.put(KEY_SECURITY_ANSWER_EMP,emp.securityAnswer)
         contentValues.put(KEY_SALT_EMP,emp.salt)
         contentValues.put(KEY_PASSWORD_EMP,emp.password)
 
@@ -294,6 +299,8 @@ class DatabaseHandler(context: Context) :
         var lastName: String
         var email: String
         var position: String
+        var securityQuestion: String
+        var securityAnswer: String
         var salt: String
         var password: String
 
@@ -306,10 +313,12 @@ class DatabaseHandler(context: Context) :
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
                 position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
+                securityQuestion = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
+                securityAnswer = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
                 salt = cursor.getString(cursor.getColumnIndexOrThrow(KEY_SALT_EMP))
                 password = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD_EMP))
 
-                val emp = Employee(id = id,nickname = nickname,firstName = firstName,middleName = middleName, lastName = lastName,email = email,position = position,salt = salt, password = password)
+                val emp = Employee(id = id,nickname = nickname,firstName = firstName,middleName = middleName, lastName = lastName,email = email,position = position,securityQuestion,securityAnswer,salt = salt, password = password)
                 empList.add(emp)
 
             } while (cursor.moveToNext())
@@ -441,6 +450,31 @@ class DatabaseHandler(context: Context) :
         return Client(id,pin,firstName,middleName,lastName)
     }
 
+    fun checkClientByPIN(PIN: String): Client? {
+        val args = listOf(PIN).toTypedArray()
+        val pinQuery = "SELECT * FROM $CLIENT_TABLE WHERE $KEY_PIN_CLIENT=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(pinQuery, args)
+        var id = 0
+        var pin = ""
+        var firstName = ""
+        var middleName = ""
+        var lastName = ""
+        if(cursor.moveToFirst()){
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
+                pin = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PIN_CLIENT))
+                firstName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_FIRSTNAME_CLIENT))
+                middleName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MIDDLENAME_CLIENT))
+                lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_CLIENT))
+
+            } while (cursor.moveToNext())
+        }
+        return if(pin == ""){
+            null
+        }else Client(id,pin,firstName,middleName,lastName)
+    }
+
     fun getEmployeeByNickname(nickname: String): Employee? {
         val args = listOf(nickname).toTypedArray()
         val pinQuery = "SELECT * FROM $EMPLOYEE_TABLE WHERE $KEY_NICKNAME_EMP=?"
@@ -453,6 +487,8 @@ class DatabaseHandler(context: Context) :
         var lastName = ""
         var email = ""
         var position = ""
+        var securityQuestion = ""
+        var securityAnswer = ""
         var salt = ""
         var password = ""
         if(cursor.moveToFirst()){
@@ -464,6 +500,10 @@ class DatabaseHandler(context: Context) :
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
                 position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
+                securityQuestion = cursor.getString(cursor.getColumnIndexOrThrow(
+                    KEY_SECURITY_QUESTION_EMP))
+                securityAnswer = cursor.getString(cursor.getColumnIndexOrThrow(
+                    KEY_SECURITY_ANSWER_EMP))
                 salt = cursor.getString(cursor.getColumnIndexOrThrow(KEY_SALT_EMP))
                 password = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD_EMP))
 
@@ -471,7 +511,7 @@ class DatabaseHandler(context: Context) :
         }
         return if(nickname == ""){
             null
-        } else Employee(id,nickname,firstName,middleName,lastName,email,position,salt,password)
+        } else Employee(id,nickname,firstName,middleName,lastName,email,position,securityQuestion,securityAnswer,salt,password)
     }
 
     fun getEmployeeByEmail(email: String): Employee? {
@@ -486,6 +526,8 @@ class DatabaseHandler(context: Context) :
         var lastName = ""
         var email = ""
         var position = ""
+        var securityQuestion = ""
+        var securityAnswer = ""
         var salt = ""
         var password = ""
         if(cursor.moveToFirst()){
@@ -497,6 +539,10 @@ class DatabaseHandler(context: Context) :
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
                 position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
+                securityQuestion = cursor.getString(cursor.getColumnIndexOrThrow(
+                    KEY_SECURITY_QUESTION_EMP))
+                securityAnswer = cursor.getString(cursor.getColumnIndexOrThrow(
+                    KEY_SECURITY_ANSWER_EMP))
                 salt = cursor.getString(cursor.getColumnIndexOrThrow(KEY_SALT_EMP))
                 password = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD_EMP))
 
@@ -504,7 +550,7 @@ class DatabaseHandler(context: Context) :
         }
         return if(email == ""){
             null
-        } else Employee(id,nickname,firstName,middleName,lastName,email,position,salt,password)
+        } else Employee(id,nickname,firstName,middleName,lastName,email,position,securityQuestion,securityAnswer,salt,password)
     }
 
     fun getVehicleByLicensePlate(licensePlate: String,context: Context): Vehicle {
@@ -540,8 +586,103 @@ class DatabaseHandler(context: Context) :
                 if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
             } while (cursor.moveToNext())
         }
-        val typeVehicle = VehicleTypes.values().first { context.getString(it.id) == type }
-        return Vehicle(id,clientId,licensePlate,VIN,registrationCertificate,engine,typeVehicle,brand,model,date,price,isValid)
+        if(type==""){
+            type = context.getString(VehicleTypes.CAR.id)
+        }
+        var vehicleType = VehicleTypes.CAR
+        if(type!="") {
+            vehicleType =
+                VehicleTypes.values().first { context.getString(it.id) == type }
+        }
+        return Vehicle(id,clientId,licensePlate,VIN,registrationCertificate,engine,vehicleType,brand,model,date,price,isValid)
+    }
+
+    fun getVehicleByVIN(VIN: String,context: Context): Vehicle? {
+        val args = listOf(VIN).toTypedArray()
+        val pinQuery = "SELECT * FROM $VEHICLE_TABLE WHERE $KEY_VIN_VEHICLE=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(pinQuery, args)
+        var id = 0
+        var clientId = 0
+        var licensePlate = ""
+        var VIN = ""
+        var registrationCertificate = ""
+        var engine = 0
+        var type = ""
+        var brand = ""
+        var model = ""
+        var date = ""
+        var price = 0.0
+        var isValid = false
+        if(cursor.moveToFirst()){
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
+                clientId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_CLIENT_ID))
+                licensePlate = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LICENSE_PLATE_VEHICLE))
+                VIN = cursor.getString(cursor.getColumnIndexOrThrow(KEY_VIN_VEHICLE))
+                registrationCertificate = cursor.getString(cursor.getColumnIndexOrThrow(KEY_REGISTRATION_CERTIFICATE_VEHICLE))
+                engine = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENGINE_VEHICLE))
+                type = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE))
+                brand = cursor.getString(cursor.getColumnIndexOrThrow(KEY_BRAND_VEHICLE))
+                model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
+                date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
+                price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
+                if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+            } while (cursor.moveToNext())
+        }
+        if(VIN==""){
+           return null
+        }
+        var vehicleType = VehicleTypes.CAR
+        if(type!="") {
+            vehicleType =
+                VehicleTypes.values().first { context.getString(it.id) == type }
+        }
+        return Vehicle(id,clientId,licensePlate,VIN,registrationCertificate,engine,vehicleType,brand,model,date,price,isValid)
+    }
+
+    fun getVehicleByRegistrationCertificate(registrationCertificate: String,context: Context): Vehicle? {
+        val args = listOf(registrationCertificate).toTypedArray()
+        val pinQuery = "SELECT * FROM $VEHICLE_TABLE WHERE $KEY_REGISTRATION_CERTIFICATE_VEHICLE=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(pinQuery, args)
+        var id = 0
+        var clientId = 0
+        var licensePlate = ""
+        var VIN = ""
+        var registrationCertificate = ""
+        var engine = 0
+        var type = ""
+        var brand = ""
+        var model = ""
+        var date = ""
+        var price = 0.0
+        var isValid = false
+        if(cursor.moveToFirst()){
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
+                clientId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_CLIENT_ID))
+                licensePlate = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LICENSE_PLATE_VEHICLE))
+                VIN = cursor.getString(cursor.getColumnIndexOrThrow(KEY_VIN_VEHICLE))
+                registrationCertificate = cursor.getString(cursor.getColumnIndexOrThrow(KEY_REGISTRATION_CERTIFICATE_VEHICLE))
+                engine = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENGINE_VEHICLE))
+                type = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE))
+                brand = cursor.getString(cursor.getColumnIndexOrThrow(KEY_BRAND_VEHICLE))
+                model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
+                date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
+                price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
+                if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+            } while (cursor.moveToNext())
+        }
+        if(registrationCertificate==""){
+            return null
+        }
+        var vehicleType = VehicleTypes.CAR
+        if(type!="") {
+            vehicleType =
+                VehicleTypes.values().first { context.getString(it.id) == type }
+        }
+        return Vehicle(id,clientId,licensePlate,VIN,registrationCertificate,engine,vehicleType,brand,model,date,price,isValid)
     }
 
     fun getPINs() : MutableList<String> {
@@ -730,6 +871,14 @@ class DatabaseHandler(context: Context) :
     fun checkLogin(nickname : String, password : String) : Boolean{
         val args = listOf(nickname,password).toTypedArray()
         val nicknamesQuery = "SELECT * FROM $EMPLOYEE_TABLE WHERE $KEY_NICKNAME_EMP=? AND $KEY_PASSWORD_EMP=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(nicknamesQuery, args)
+        return cursor.count>0
+    }
+
+    fun checkPasswordReset(nickname : String, securityQuestion : String, securityAnswer : String) : Boolean{
+        val args = listOf(nickname,securityQuestion,securityAnswer).toTypedArray()
+        val nicknamesQuery = "SELECT * FROM $EMPLOYEE_TABLE WHERE $KEY_NICKNAME_EMP=? AND $KEY_SECURITY_QUESTION_EMP=? AND $KEY_SECURITY_ANSWER_EMP=?"
         val db = this.readableDatabase
         val cursor = db.rawQuery(nicknamesQuery, args)
         return cursor.count>0

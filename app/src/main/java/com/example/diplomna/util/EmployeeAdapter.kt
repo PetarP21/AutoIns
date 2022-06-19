@@ -12,7 +12,12 @@ import com.example.diplomna.R
 import com.example.diplomna.models.Employee
 import com.example.diplomna.ui.ShowEmployersFragment
 
-class EmployeeAdapter(val context: Context, val items: ArrayList<Employee>) : RecyclerView.Adapter<EmployeeAdapter.ViewHolder>(){
+class EmployeeAdapter(val context: Context, val items: ArrayList<Employee>) : RecyclerView.Adapter<EmployeeAdapter.ViewHolder>(),Filterable{
+    var itemsFull = ArrayList<Employee>()
+
+    init {
+        itemsFull.addAll(items)
+    }
 
    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nickname: TextView
@@ -84,4 +89,32 @@ class EmployeeAdapter(val context: Context, val items: ArrayList<Employee>) : Re
     override fun getItemCount(): Int {
         return items.size
     }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val filteredList : ArrayList<Employee> = arrayListOf()
+                if(constraint == null || constraint.isEmpty()){
+                    filteredList.addAll(itemsFull)
+                } else {
+                   val filterPattern = constraint.toString().lowercase().trim()
+                    for(item in itemsFull){
+                        if(item.nickname.lowercase().contains(filterPattern)){
+                            filteredList.add(item)
+                        }
+                    }
+                }
+                val results = FilterResults()
+                results.values = filteredList
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                items.clear()
+                items.addAll(results?.values as ArrayList<Employee>)
+                notifyDataSetChanged()
+            }
+        }
+    }
+
 }

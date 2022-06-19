@@ -7,15 +7,19 @@ import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentEmployeeOperationsBinding
 import com.example.diplomna.models.Client
@@ -34,6 +38,7 @@ import java.util.regex.Pattern
  */
 class EmployeeOperationsFragment : BaseFragment() {
     private lateinit var binding: FragmentEmployeeOperationsBinding
+    private lateinit var toggle: ActionBarDrawerToggle
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,6 +49,7 @@ class EmployeeOperationsFragment : BaseFragment() {
             container,
             false
         )
+        val username = SharedPref.readString("NICKNAME")
 
         val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
         val currentDate = simpleDateFormat.format(Date())
@@ -88,6 +94,13 @@ class EmployeeOperationsFragment : BaseFragment() {
         setPINs(PINsAdapter)
         setLicensePlates(licensePlatesAdapter)
         return binding.root
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(toggle.onOptionsItemSelected(item)){
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
@@ -234,13 +247,21 @@ class EmployeeOperationsFragment : BaseFragment() {
                 }
 
                 if(VIN.count() == 17){
-                    isVINValid = true
+                    if(databaseHandler.getVehicleByVIN(VIN,requireContext()) != null){
+                        binding.vinVehicle.editText?.error = "Вече съществува МПС с такъв номер."
+                    } else {
+                        isVINValid = true
+                    }
                 } else {
                     binding.vinVehicle.editText?.error = "Недостатъчен брой символи."
                 }
 
                 if(regCertificate.count() == 9){
-                    isRegCertificateValid = true
+                    if(databaseHandler.getVehicleByRegistrationCertificate(regCertificate,requireContext()) != null){
+                        binding.registrationCertificate.editText?.error = "Вече съществува МПС с такъв номер."
+                    } else {
+                        isRegCertificateValid = true
+                    }
                 } else {
                     binding.registrationCertificate.editText?.error = "Недостатъчен брой символи."
                 }

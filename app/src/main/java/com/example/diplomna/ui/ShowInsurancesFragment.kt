@@ -4,24 +4,27 @@ import DatabaseHandler
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.view.*
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentShowInsurancesBinding
 import com.example.diplomna.models.Employee
 import com.example.diplomna.models.Vehicle
+import com.example.diplomna.util.ClientAdapter
 import com.example.diplomna.util.EmployeeAdapter
 import com.example.diplomna.util.VehicleAdapter
 
 
 class ShowInsurancesFragment : Fragment() {
     private lateinit var binding: FragmentShowInsurancesBinding
+    private lateinit var vehicleAdapter: VehicleAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,6 +37,7 @@ class ShowInsurancesFragment : Fragment() {
         )
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbarIns)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setHasOptionsMenu(true)
         setupListOfDataIntoRecyclerView()
         return binding.root
     }
@@ -48,7 +52,7 @@ class ShowInsurancesFragment : Fragment() {
             // Set the LayoutManager that this RecyclerView will use.
             binding.rvItemsListIns.layoutManager = LinearLayoutManager(requireContext())
             // Adapter class is initialized and list is passed in the param.
-            val vehicleAdapter = VehicleAdapter(requireContext(), getItemsList())
+            vehicleAdapter = VehicleAdapter(requireContext(), getItemsList())
             // adapter instance is set to the recyclerview to inflate the items.
             binding.rvItemsListIns.adapter = vehicleAdapter
         } else {
@@ -105,4 +109,26 @@ class ShowInsurancesFragment : Fragment() {
         alertDialog.show()  // show the dialog to UI
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+        inflater.inflate(R.menu.item_menu, menu)
+        val searchView = SearchView((activity as MainActivity).supportActionBar?.themedContext ?: context)
+        searchView.queryHint = "Въведете рег. номер"
+        menu.findItem(R.id.action_search).apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            actionView = searchView
+        }
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                vehicleAdapter.filter.filter(newText)
+                return false
+            }
+        })
+    }
 }

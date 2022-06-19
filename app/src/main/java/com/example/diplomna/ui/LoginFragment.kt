@@ -14,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentLoginBinding
+import com.example.diplomna.models.Employee
 import com.example.diplomna.util.SHA256
 import com.example.diplomna.util.SharedPref
 
@@ -45,6 +46,9 @@ class LoginFragment : Fragment() {
         binding.loginButton.setOnClickListener {
            login()
         }
+        binding.forgottenPassword.setOnClickListener{
+            findNavController().navigate(R.id.action_loginFragment_to_forgottenPasswordFragment)
+        }
         return binding.root
     }
 
@@ -57,9 +61,16 @@ class LoginFragment : Fragment() {
         val salt = databaseHandler.getSaltByNickname(nickname)
         val isValid = databaseHandler.checkLogin(nickname, SHA256.encrypt(salt+password))
         if(isValid){
+
             when(databaseHandler.getPositionByNickname(nickname)){
-                "Админ" -> findNavController().navigate(R.id.action_loginFragment_to_adminOperationsFragment)
-                "Застраховател" -> findNavController().navigate(R.id.action_loginFragment_to_employeeOperationsFragment)
+                "Админ" -> {
+                    val action = LoginFragmentDirections.actionLoginFragmentToAdminOperationsFragment(nickname)
+                    findNavController().navigate(action)
+                }
+                "Застраховател" -> {
+                    val action = LoginFragmentDirections.actionLoginFragmentToEmployeeOperationsFragment(nickname)
+                    findNavController().navigate(action)
+                }
                 else -> {
                     Toast.makeText(context,"Error!",Toast.LENGTH_LONG).show()
                 }

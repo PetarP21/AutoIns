@@ -5,15 +5,23 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diplomna.MainActivity
 import com.example.diplomna.R
+import com.example.diplomna.models.Employee
 import com.example.diplomna.models.Vehicle
 import com.example.diplomna.ui.ShowInsurancesFragment
 
-class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : RecyclerView.Adapter<VehicleAdapter.ViewHolder>() {
+class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : RecyclerView.Adapter<VehicleAdapter.ViewHolder>(),Filterable {
+    var itemsFull = ArrayList<Vehicle>()
+
+    init {
+        itemsFull.addAll(items)
+    }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val licensePlate: TextView
@@ -88,5 +96,32 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val filteredList : ArrayList<Vehicle> = arrayListOf()
+                if(constraint == null || constraint.isEmpty()){
+                    filteredList.addAll(itemsFull)
+                } else {
+                    val filterPattern = constraint.toString().lowercase().trim()
+                    for(item in itemsFull){
+                        if(item.licencePlate.lowercase().contains(filterPattern)){
+                            filteredList.add(item)
+                        }
+                    }
+                }
+                val results = FilterResults()
+                results.values = filteredList
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                items.clear()
+                items.addAll(results?.values as ArrayList<Vehicle>)
+                notifyDataSetChanged()
+            }
+        }
     }
 }

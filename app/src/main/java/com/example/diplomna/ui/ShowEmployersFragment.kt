@@ -4,19 +4,22 @@ import DatabaseHandler
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.*
+import android.util.Log
+import android.util.Patterns
+import android.view.*
+import android.widget.EditText
+import android.widget.SearchView
+import android.widget.SearchView.OnQueryTextListener
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentShowEmployersBinding
-import com.example.diplomna.models.Client
 import com.example.diplomna.models.Employee
-import com.example.diplomna.models.VehicleTypes
 import com.example.diplomna.util.EmployeeAdapter
 
 
@@ -26,6 +29,8 @@ import com.example.diplomna.util.EmployeeAdapter
 */
 class ShowEmployersFragment : Fragment() {
     private lateinit var binding: FragmentShowEmployersBinding
+    private lateinit var itemAdapter: EmployeeAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,13 +43,11 @@ class ShowEmployersFragment : Fragment() {
         )
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setHasOptionsMenu(true)
         setupListOfDataIntoRecyclerView()
         return binding.root
     }
 
-    /**
-     * Function is used to show the list of inserted data.
-     */
     private fun setupListOfDataIntoRecyclerView() {
 
         if (getItemsList().size > 0) {
@@ -55,7 +58,7 @@ class ShowEmployersFragment : Fragment() {
             // Set the LayoutManager that this RecyclerView will use.
             binding.rvItemsList.layoutManager = LinearLayoutManager(requireContext())
             // Adapter class is initialized and list is passed in the param.
-            val itemAdapter = EmployeeAdapter(requireContext(), getItemsList())
+            itemAdapter = EmployeeAdapter(requireContext(), getItemsList())
             // adapter instance is set to the recyclerview to inflate the items.
             binding.rvItemsList.adapter = itemAdapter
         } else {
@@ -64,9 +67,6 @@ class ShowEmployersFragment : Fragment() {
         }
     }
 
-    /**
-     * Function is used to get the Items List from the database table.
-     */
     private fun getItemsList(): ArrayList<Employee> {
         //creating the instance of DatabaseHandler class
         val databaseHandler = DatabaseHandler(requireContext())
@@ -74,23 +74,15 @@ class ShowEmployersFragment : Fragment() {
         return databaseHandler.viewEmployee()
     }
 
-    /**
-     * Method is used to show the Alert Dialog.
-     */
     fun deleteEmployeeRecordAlertDialog(employee: Employee) {
         val builder = AlertDialog.Builder(requireContext())
-        //set title for alert dialog
         builder.setTitle("Delete Record")
-        //set message for alert dialog
         builder.setMessage("Are you sure you wants to delete ${employee.nickname}.")
         builder.setIcon(android.R.drawable.ic_dialog_alert)
 
-        //performing positive action
         builder.setPositiveButton("Yes") { dialogInterface, _ ->
 
-            //creating the instance of DatabaseHandler class
             val databaseHandler = DatabaseHandler(requireContext())
-            //calling the deleteEmployee method of DatabaseHandler class to delete record
             val status = databaseHandler.deleteEmployee(
                 Employee(
                     employee.id,
@@ -100,6 +92,8 @@ class ShowEmployersFragment : Fragment() {
                     employee.lastName,
                     employee.email,
                     employee.position,
+                    employee.securityQuestion,
+                    employee.securityAnswer,
                     employee.salt,
                     employee.password
                 )
@@ -116,13 +110,10 @@ class ShowEmployersFragment : Fragment() {
 
             dialogInterface.dismiss() // Dialog will be dismissed
         }
-        //performing negative action
         builder.setNegativeButton("No") { dialogInterface, _ ->
             dialogInterface.dismiss() // Dialog will be dismissed
         }
-        // Create the AlertDialog
         val alertDialog: AlertDialog = builder.create()
-        // Set other dialog properties
         alertDialog.setCancelable(false) // Will not allow user to cancel after clicking on remaining screen area.
         alertDialog.show()  // show the dialog to UI
     }
@@ -134,60 +125,84 @@ class ShowEmployersFragment : Fragment() {
          The resource will be inflated, adding all top-level views to the screen.*/
         updateDialog.setContentView(R.layout.employee_update)
 
-        val nickname = updateDialog.findViewById<EditText>(R.id.nickname_editText_update_emp)
-        val firstName = updateDialog.findViewById<EditText>(R.id.firstName_editText_update_emp)
-        val middleName = updateDialog.findViewById<EditText>(R.id.middleName_editText_update_emp)
-        val lastName = updateDialog.findViewById<EditText>(R.id.lastName_editText_update_emp)
-        val email = updateDialog.findViewById<EditText>(R.id.email_editText_update_emp)
+        val nicknameEditText =
+            updateDialog.findViewById<EditText>(R.id.nickname_editText_update_emp)
+        val firstNameEditText =
+            updateDialog.findViewById<EditText>(R.id.firstName_editText_update_emp)
+        val middleNameEditText =
+            updateDialog.findViewById<EditText>(R.id.middleName_editText_update_emp)
+        val lastNameEditText =
+            updateDialog.findViewById<EditText>(R.id.lastName_editText_update_emp)
+        val emailEditText = updateDialog.findViewById<EditText>(R.id.email_editText_update_emp)
         val updateButton = updateDialog.findViewById<TextView>(R.id.employee_update_textView)
         val cancelButton = updateDialog.findViewById<TextView>(R.id.employee_cancel_textView)
 
 
-        nickname.setText(employee.nickname)
-        firstName.setText(employee.firstName)
-        middleName.setText(employee.middleName)
-        lastName.setText(employee.lastName)
-        email.setText(employee.email)
+        nicknameEditText.setText(employee.nickname)
+        firstNameEditText.setText(employee.firstName)
+        middleNameEditText.setText(employee.middleName)
+        lastNameEditText.setText(employee.lastName)
+        emailEditText.setText(employee.email)
 
         updateButton.setOnClickListener {
 
-            val nickname = nickname.text.toString()
-            val firstName = firstName.text.toString()
-            val middleName = middleName.text.toString()
-            val lastName = lastName.text.toString()
-            val email = email.text.toString()
+            val nickname = nicknameEditText.text.toString()
+            val firstName = firstNameEditText.text.toString()
+            val middleName = middleNameEditText.text.toString()
+            val lastName = lastNameEditText.text.toString()
+            val email = emailEditText.text.toString()
 
             val databaseHandler = DatabaseHandler(requireContext())
 
             if (nickname.isNotEmpty() && firstName.isNotEmpty() && middleName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()) {
-                val status =
-                    databaseHandler.updateEmployee(
-                        Employee(
-                            employee.id,
-                            nickname,
-                            firstName,
-                            middleName,
-                            lastName,
-                            email,
-                            employee.position,
-                            employee.salt,
-                            employee.password
-                        )
-                    )
-                if (status > -1) {
-                    Toast.makeText(requireContext(), "Записът е редактиран.", Toast.LENGTH_LONG)
-                        .show()
-
-                    setupListOfDataIntoRecyclerView()
-
-                    updateDialog.dismiss() // Dialog will be dismissed
+                var isNickNameAvailable = false
+                var isEmailAvailable = false
+                var isEmailValid = false
+                if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    isEmailValid = true
+                } else {
+                    emailEditText.error = "Невалиден имейл адрес."
                 }
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Не всички полета са попълнени.",
-                    Toast.LENGTH_LONG
-                ).show()
+                if (databaseHandler.getEmployeeByNickname(nickname) != null && nickname != employee.nickname) {
+                    nicknameEditText.error = "Вече съществува потребител с това потребителско име."
+                } else {
+                    isNickNameAvailable = true
+                }
+
+                if (databaseHandler.getEmployeeByEmail(email) != null && email != employee.email) {
+                    emailEditText.error = "Вече съществува потребител с този имейл."
+                } else {
+                    isEmailAvailable = true
+                }
+                if (isEmailAvailable && isNickNameAvailable && isEmailValid) {
+                    val status =
+                        databaseHandler.updateEmployee(
+                            Employee(
+                                employee.id,
+                                nickname,
+                                firstName,
+                                middleName,
+                                lastName,
+                                email,
+                                employee.position,
+                                employee.securityQuestion,
+                                employee.securityAnswer,
+                                employee.salt,
+                                employee.password
+                            )
+                        )
+                    if (status > -1) {
+                        Toast.makeText(requireContext(), "Записът е редактиран.", Toast.LENGTH_LONG)
+                            .show()
+
+                        setupListOfDataIntoRecyclerView()
+
+                        updateDialog.dismiss() // Dialog will be dismissed
+                    }
+                } else {
+                    Toast.makeText(context, "Не всички полета са попълнени.", Toast.LENGTH_LONG)
+                        .show()
+                }
             }
         }
         cancelButton.setOnClickListener {
@@ -195,5 +210,28 @@ class ShowEmployersFragment : Fragment() {
         }
         //Start the dialog and display it on screen.
         updateDialog.show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+        inflater.inflate(R.menu.item_menu, menu)
+        val searchView = SearchView((activity as MainActivity).supportActionBar?.themedContext ?: context)
+        searchView.queryHint = "Въведете потр. име"
+        menu.findItem(R.id.action_search).apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            actionView = searchView
+        }
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                itemAdapter.filter.filter(newText)
+                return false
+            }
+        })
     }
 }

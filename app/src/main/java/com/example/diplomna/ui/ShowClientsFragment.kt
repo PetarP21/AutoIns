@@ -4,16 +4,16 @@ import DatabaseHandler
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentShowClientsBinding
 import com.example.diplomna.models.Client
@@ -24,6 +24,7 @@ import java.util.regex.Pattern
 
 class ShowClientsFragment : BaseFragment() {
     private lateinit var binding: FragmentShowClientsBinding
+    private lateinit var clientAdapter: ClientAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,6 +37,7 @@ class ShowClientsFragment : BaseFragment() {
         )
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbarClient)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setHasOptionsMenu(true)
         setupListOfDataIntoRecyclerView()
         return binding.root
     }
@@ -49,7 +51,7 @@ class ShowClientsFragment : BaseFragment() {
             // Set the LayoutManager that this RecyclerView will use.
             binding.rvItemsListClient.layoutManager = LinearLayoutManager(requireContext())
             // Adapter class is initialized and list is passed in the param.
-            val clientAdapter = ClientAdapter(requireContext(), getItemsList())
+            clientAdapter = ClientAdapter(requireContext(), getItemsList())
             // adapter instance is set to the recyclerview to inflate the items.
             binding.rvItemsListClient.adapter = clientAdapter
         } else {
@@ -99,7 +101,11 @@ class ShowClientsFragment : BaseFragment() {
                 var isPINValid = false
                 val patternPIN = Pattern.compile("[0-9]{2}[0145][0-9][0-3][0-9]{5}")
                 if (patternPIN.matcher(pin_str).matches()) {
-                    isPINValid = true
+                    if(databaseHandler.checkClientByPIN(pin_str) != null && pin_str != client.PIN) {
+                        pin.error = "Вече съществува клиент с ЕГН: $pin_str"
+                    } else {
+                        isPINValid = true
+                    }
                 } else {
                     pin.error = "Невалидно ЕГН"
                 }
@@ -185,5 +191,28 @@ class ShowClientsFragment : BaseFragment() {
         // Set other dialog properties
         alertDialog.setCancelable(false) // Will not allow user to cancel after clicking on remaining screen area.
         alertDialog.show()  // show the dialog to UI
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+        inflater.inflate(R.menu.item_menu, menu)
+        val searchView = SearchView((activity as MainActivity).supportActionBar?.themedContext ?: context)
+        searchView.queryHint = "Въведете ЕГН"
+        menu.findItem(R.id.action_search).apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            actionView = searchView
+        }
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                clientAdapter.filter.filter(newText)
+                return false
+            }
+        })
     }
 }

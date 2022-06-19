@@ -9,5 +9,7 @@ class Employee
      val lastName: String,
      val email: String,
      val position : String,
+     val securityQuestion : String,
+     val securityAnswer : String,
      val salt : String,
      val password : String)

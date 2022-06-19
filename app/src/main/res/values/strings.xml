@@ -20,4 +20,11 @@
     <string name="car">Лек автомобил</string>
     <string name="truck">Товарен автомобил</string>
     <string name="motorcycle">Мотоциклет</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="petQuestion">Името на домашния Ви любимец?</string>
+    <string name="motherQuestion">Името на майка Ви?</string>
+    <string name="jobQuestion">Името на първата Ви работа?</string>
+    <string name="fatherQuestion">Родното място на баща Ви?</string>
+
 </resources>

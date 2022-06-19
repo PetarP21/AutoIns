@@ -14,6 +14,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentAdminOperationsBinding
 import com.example.diplomna.models.Employee
+import com.example.diplomna.models.SecurityQuestions
+import com.example.diplomna.models.VehicleTypes
 import com.example.diplomna.util.SHA256
 import com.example.diplomna.util.SharedPref
 
@@ -29,6 +31,8 @@ class AdminOperationsFragment : Fragment() {
             container,
             false
         )
+        val username = AdminOperationsFragmentArgs.fromBundle(requireArguments()).username
+
         binding.addEmployee.setOnClickListener { addRecord() }
         binding.viewEmployers.setOnClickListener {
             findNavController().navigate(R.id.action_adminOperationsFragment_to_showEmployersFragment)
@@ -92,6 +96,8 @@ class AdminOperationsFragment : Fragment() {
                         lastName,
                         email,
                         position,
+                        getString(SecurityQuestions.PET.id),
+                        SHA256.encrypt(salt + "admin"),
                         salt,
                         SHA256.encrypt(salt + "admin")
                     )
