@@ -3,14 +3,15 @@ package com.example.diplomna.ui
 import DatabaseHandler
 import android.os.Bundle
 import android.util.Patterns
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.RadioButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentAdminOperationsBinding
 import com.example.diplomna.models.Employee
@@ -31,17 +32,34 @@ class AdminOperationsFragment : Fragment() {
             container,
             false
         )
-        val username = AdminOperationsFragmentArgs.fromBundle(requireArguments()).username
-
+        (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
+        setHasOptionsMenu(true)
         binding.addEmployee.setOnClickListener { addRecord() }
         binding.viewEmployers.setOnClickListener {
             findNavController().navigate(R.id.action_adminOperationsFragment_to_showEmployersFragment)
         }
-        binding.logout.setOnClickListener {
-            SharedPref.clear()
-            findNavController().navigate(R.id.action_adminOperationsFragment_to_loginFragment)
-        }
+
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.options_menu,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.updateProfileFragment -> {
+                NavigationUI.onNavDestinationSelected(item, requireView().findNavController())
+                true
+            }
+            R.id.logout_action -> {
+                SharedPref.clear()
+                findNavController().navigate(R.id.action_adminOperationsFragment_to_loginFragment)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun addRecord() {

@@ -108,4 +108,8 @@
         android:id="@+id/forgottenPasswordFragment"
         android:name="com.example.diplomna.ui.ForgottenPasswordFragment"
         android:label="ForgottenPasswordFragment" />
+    <fragment
+        android:id="@+id/updateProfileFragment"
+        android:name="com.example.diplomna.ui.UpdateProfileFragment"
+        android:label="UpdateProfileFragment" />
 </navigation>

@@ -6,10 +6,8 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -18,7 +16,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentEmployeeOperationsBinding
@@ -31,14 +31,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-/*
-1 - бутон за профил както при другите админ операциите
-2 - 2 бутона за "добавяне на застраховка" и "преглед на всички застраховки"
-
- */
 class EmployeeOperationsFragment : BaseFragment() {
     private lateinit var binding: FragmentEmployeeOperationsBinding
-    private lateinit var toggle: ActionBarDrawerToggle
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,7 +44,8 @@ class EmployeeOperationsFragment : BaseFragment() {
             container,
             false
         )
-        val username = SharedPref.readString("NICKNAME")
+        (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
+        setHasOptionsMenu(true)
 
         val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
         val currentDate = simpleDateFormat.format(Date())
@@ -96,16 +92,29 @@ class EmployeeOperationsFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(toggle.onOptionsItemSelected(item)){
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onResume() {
         super.onResume()
         setVehicleTypes()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.options_menu,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.updateProfileFragment -> {
+                NavigationUI.onNavDestinationSelected(item, requireView().findNavController())
+                true
+            }
+            R.id.logout_action -> {
+                SharedPref.clear()
+                findNavController().navigate(R.id.action_employeeOperationsFragment_to_loginFragment)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setPINs(adapter: ArrayAdapter<String>) {

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".ui.UpdateProfileFragment">
+
+                <TextView
+                    android:id="@+id/employee_data"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_3x"
+                    android:layout_marginLeft="@dimen/margin_x"
+                    android:layout_marginRight="@dimen/margin_x"
+                    android:text="Лични данни:"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_2.5x"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/username_employee"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:layout_marginStart="@dimen/margin_3x"
+                    android:layout_marginEnd="@dimen/margin_3x"
+                    android:hint="Потребителско име*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="16"
+                    app:counterTextColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/employee_data">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+                        android:inputType="textFilter"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/firstname_employee"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:hint="Име*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="@id/username_employee"
+                    app:layout_constraintStart_toStartOf="@id/username_employee"
+                    app:layout_constraintTop_toBottomOf="@+id/username_employee">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/middlename_employee"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:hint="Презиме*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="@id/firstname_employee"
+                    app:layout_constraintStart_toStartOf="@id/firstname_employee"
+                    app:layout_constraintTop_toBottomOf="@+id/firstname_employee">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/lastname_employee"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:hint="Фамилия*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="@id/middlename_employee"
+                    app:layout_constraintStart_toStartOf="@id/middlename_employee"
+                    app:layout_constraintTop_toBottomOf="@+id/middlename_employee">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/email_employee"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:hint="Имейл*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="@id/lastname_employee"
+                    app:layout_constraintStart_toStartOf="@id/lastname_employee"
+                    app:layout_constraintTop_toBottomOf="@+id/lastname_employee">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/update_profile_data"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:backgroundTint="@color/orange"
+                    android:text="Промени данни"
+                    android:textSize="@dimen/size_1.5x"
+                    app:layout_constraintEnd_toEndOf="@id/username_employee"
+                    app:layout_constraintStart_toStartOf="@id/username_employee"
+                    app:layout_constraintTop_toBottomOf="@+id/email_employee" />
+
+                <TextView
+                    android:id="@+id/employee_security"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_5x"
+                    android:layout_marginLeft="@dimen/margin_3x"
+                    android:layout_marginRight="@dimen/margin_3x"
+                    android:text="Таен въпрос и отговор:"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_2.5x"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/update_profile_data"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/sec_questions"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:hint="Таен въпрос*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="@id/username_employee"
+                    app:layout_constraintStart_toStartOf="@id/username_employee"
+                    app:layout_constraintTop_toBottomOf="@+id/employee_security">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/sec_question"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:paddingLeft="@dimen/margin_1.5x"
+                        android:paddingTop="@dimen/margin_2x"
+                        android:paddingRight="@dimen/margin_1.5x"
+                        android:paddingBottom="@dimen/margin_1.5x"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/sec_answer"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:hint="Таен отговор*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="@id/sec_questions"
+                    app:layout_constraintStart_toStartOf="@id/sec_questions"
+                    app:layout_constraintTop_toBottomOf="@+id/sec_questions">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/update_security_answer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:backgroundTint="@color/orange"
+                    android:text="Промени таен въпрос и отговор"
+                    android:textSize="@dimen/size_1.5x"
+                    app:layout_constraintEnd_toEndOf="@id/username_employee"
+                    app:layout_constraintStart_toStartOf="@id/username_employee"
+                    app:layout_constraintTop_toBottomOf="@+id/sec_answer" />
+
+                <TextView
+                    android:id="@+id/employee_password"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_5x"
+                    android:layout_marginLeft="@dimen/margin_3x"
+                    android:layout_marginRight="@dimen/margin_3x"
+                    android:text="Парола:"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_2.5x"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/update_security_answer"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/old_password"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_3.5x"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:layout_marginRight="@dimen/margin_3.5x"
+                    android:hint="Стара парола*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/employee_password"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/new_password"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_3.5x"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:layout_marginRight="@dimen/margin_3.5x"
+                    android:hint="Нова парола*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/old_password"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/new_password_repeat"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_3.5x"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:layout_marginRight="@dimen/margin_3.5x"
+                    android:hint="Повторете новата парола*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/new_password"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/update_profile_password"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:backgroundTint="@color/orange"
+                    android:text="Промени парола"
+                    android:textSize="@dimen/size_1.5x"
+                    app:layout_constraintEnd_toEndOf="@id/username_employee"
+                    app:layout_constraintStart_toStartOf="@id/username_employee"
+                    app:layout_constraintTop_toBottomOf="@+id/new_password_repeat" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/orange"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="Редактиране на профил" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

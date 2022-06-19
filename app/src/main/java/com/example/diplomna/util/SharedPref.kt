@@ -25,6 +25,11 @@ object SharedPref {
         editor.apply()
     }
 
+    fun writeUsername(username: String){
+        val editor = prefs.edit()
+        editor.putString("NICKNAME",username)
+    }
+
     fun clear(){
         val editor = prefs.edit()
         editor.clear()

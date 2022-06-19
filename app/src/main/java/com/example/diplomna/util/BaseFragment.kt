@@ -1,6 +1,14 @@
 package com.example.diplomna.util
 
+import android.app.Dialog
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import androidx.fragment.app.Fragment
+import com.example.diplomna.R
+import com.example.diplomna.models.Employee
+import com.example.diplomna.models.SecurityQuestions
+import com.example.diplomna.models.VehicleTypes
 import java.util.*
 
 abstract class BaseFragment : Fragment() {
@@ -49,4 +57,5 @@ abstract class BaseFragment : Fragment() {
         }
         return price
     }
+
 }
