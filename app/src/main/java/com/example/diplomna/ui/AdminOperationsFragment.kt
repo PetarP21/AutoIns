@@ -38,7 +38,6 @@ class AdminOperationsFragment : Fragment() {
         binding.viewEmployers.setOnClickListener {
             findNavController().navigate(R.id.action_adminOperationsFragment_to_showEmployersFragment)
         }
-
         return binding.root
     }
 
