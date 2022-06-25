@@ -33,7 +33,7 @@ class DatabaseHandler(context: Context) :
         private const val KEY_MIDDLENAME_EMP = "middle_name"
         private const val KEY_LASTNAME_EMP = "last_name"
         private const val KEY_EMAIL_EMP = "email"
-        private const val KEY_POSITION_EMP = "position"
+        private const val KEY_POSITION_ID = "position_id"
         private const val KEY_SECURITY_QUESTION_EMP = "security_question"
         private const val KEY_SECURITY_ANSWER_EMP = "security_answer"
         private const val KEY_SALT_EMP = "salt"
@@ -76,11 +76,15 @@ class DatabaseHandler(context: Context) :
                 + KEY_MIDDLENAME_EMP + " TEXT,"
                 + KEY_LASTNAME_EMP + " TEXT,"
                 + KEY_EMAIL_EMP + " TEXT,"
-                + KEY_POSITION_EMP + " TEXT,"
+                + KEY_POSITION_ID + " INTEGER,"
                 + KEY_SECURITY_QUESTION_EMP + " TEXT,"
                 + KEY_SECURITY_ANSWER_EMP + " TEXT,"
                 + KEY_SALT_EMP + " TEXT,"
-                + KEY_PASSWORD_EMP + " TEXT" + ")")
+                + KEY_PASSWORD_EMP + " TEXT,"
+                + " CONSTRAINT fk_positions"
+                + " FOREIGN KEY(" + KEY_POSITION_ID + ") REFERENCES " + POSITION_TABLE + "(" + KEY_ID + ")"
+                + " ON DELETE CASCADE"
+                + ")")
         db?.execSQL(CREATE_EMPLOYEE_TABLE)
 
         val CREATE_POSITION_TABLE = ("CREATE TABLE " + POSITION_TABLE + "("
@@ -183,6 +187,62 @@ class DatabaseHandler(context: Context) :
         return positions
     }
 
+    fun getIdByPosition(position: String): Int {
+        val args = listOf(position).toTypedArray()
+        val pinQuery = "SELECT $KEY_ID FROM $POSITION_TABLE WHERE $KEY_POSITION=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(pinQuery, args)
+        var id: Int = 0
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
+            } while (cursor.moveToNext())
+        }
+        return id
+    }
+
+    // ******************************************
+    fun getClientByVehicle(vehicle: Vehicle) : Client{
+        val vehicleQuery = "SELECT * FROM $VEHICLE_TABLE" +
+                " INNER JOIN $CLIENT_TABLE ON $VEHICLE_TABLE.$KEY_CLIENT_ID = $CLIENT_TABLE.$KEY_ID WHERE $CLIENT_TABLE.$KEY_ID=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(vehicleQuery, arrayOf(vehicle.clientId.toString()))
+        var id = 0
+        var pin = ""
+        var firstName = ""
+        var middleName = ""
+        var lastName = ""
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_CLIENT_ID))
+                pin = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PIN_CLIENT))
+                firstName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_FIRSTNAME_CLIENT))
+                middleName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MIDDLENAME_CLIENT))
+                lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_CLIENT))
+
+            } while (cursor.moveToNext())
+        }
+        return Client(id, pin, firstName, middleName, lastName)
+    }
+    // ******************************************
+
+    fun getPositionByEmployee(employee: Employee): Position {
+        val positionQuery = "SELECT * FROM $EMPLOYEE_TABLE" +
+                " INNER JOIN $POSITION_TABLE ON $EMPLOYEE_TABLE.$KEY_POSITION_ID = $POSITION_TABLE.$KEY_ID WHERE $POSITION_TABLE.$KEY_ID=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(positionQuery, arrayOf(employee.positionId.toString()))
+        var id = 0
+        var position = ""
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION_ID))
+                position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION))
+            } while (cursor.moveToNext())
+        }
+        return Position(id, position)
+    }
+
+
 
     fun addEmployee(emp: Employee): Long {
         val db = this.writableDatabase
@@ -190,18 +250,16 @@ class DatabaseHandler(context: Context) :
         val contentValues = ContentValues()
         contentValues.put(KEY_NICKNAME_EMP, emp.nickname)
         contentValues.put(KEY_FIRSTNAME_EMP, emp.firstName)
-        contentValues.put(KEY_LASTNAME_EMP, emp.lastName)
         contentValues.put(KEY_MIDDLENAME_EMP, emp.middleName)
+        contentValues.put(KEY_LASTNAME_EMP, emp.lastName)
         contentValues.put(KEY_EMAIL_EMP, emp.email)
-        contentValues.put(KEY_POSITION_EMP, emp.position)
+        contentValues.put(KEY_POSITION_ID, emp.positionId)
         contentValues.put(KEY_SECURITY_QUESTION_EMP, emp.securityQuestion)
         contentValues.put(KEY_SECURITY_ANSWER_EMP, emp.securityAnswer)
         contentValues.put(KEY_SALT_EMP, emp.salt)
         contentValues.put(KEY_PASSWORD_EMP, emp.password)
 
-        // Inserting employee details using insert query.
         val success = db.insert(EMPLOYEE_TABLE, null, contentValues)
-        //2nd argument is String containing nullColumnHack
 
         db.close() // Closing database connection
         return success
@@ -218,7 +276,7 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_MIDDLENAME_EMP, emp.middleName)
         contentValues.put(KEY_LASTNAME_EMP, emp.lastName) // EmpModelClass Email
         contentValues.put(KEY_EMAIL_EMP, emp.email)
-        contentValues.put(KEY_POSITION_EMP, emp.position)
+        contentValues.put(KEY_POSITION_ID, emp.positionId)
         contentValues.put(KEY_SECURITY_QUESTION_EMP, emp.securityQuestion)
         contentValues.put(KEY_SECURITY_ANSWER_EMP, emp.securityAnswer)
         contentValues.put(KEY_SALT_EMP, emp.salt)
@@ -364,7 +422,7 @@ class DatabaseHandler(context: Context) :
         var middleName: String
         var lastName: String
         var email: String
-        var position: String
+        var positionId: Int
         var securityQuestion: String
         var securityAnswer: String
         var salt: String
@@ -378,9 +436,11 @@ class DatabaseHandler(context: Context) :
                 middleName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MIDDLENAME_EMP))
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
-                position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
-                securityQuestion = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
-                securityAnswer = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
+                positionId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION_ID))
+                securityQuestion = cursor.getString(cursor.getColumnIndexOrThrow(
+                    KEY_SECURITY_QUESTION_EMP))
+                securityAnswer = cursor.getString(cursor.getColumnIndexOrThrow(
+                    KEY_SECURITY_ANSWER_EMP))
                 salt = cursor.getString(cursor.getColumnIndexOrThrow(KEY_SALT_EMP))
                 password = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD_EMP))
 
@@ -391,9 +451,9 @@ class DatabaseHandler(context: Context) :
                     middleName = middleName,
                     lastName = lastName,
                     email = email,
-                    position = position,
-                    securityQuestion,
-                    securityAnswer,
+                    positionId = positionId,
+                    securityQuestion = securityQuestion,
+                    securityAnswer = securityAnswer,
                     salt = salt,
                     password = password
                 )
@@ -404,19 +464,33 @@ class DatabaseHandler(context: Context) :
         return empList
     }
 
-    fun getPositionByNickname(nickname: String): String? {
+    fun getPositionIdByNickname(nickname: String): Int {
         val args = listOf(nickname).toTypedArray()
         val nicknameQuery =
-            "SELECT $KEY_POSITION_EMP FROM $EMPLOYEE_TABLE WHERE $KEY_NICKNAME_EMP=?"
+            "SELECT $KEY_POSITION_ID FROM $EMPLOYEE_TABLE WHERE $KEY_NICKNAME_EMP=?"
         val db = this.readableDatabase
         val cursor = db.rawQuery(nicknameQuery, args)
-        var position: String? = null
+        var positionId = 0
         if (cursor.moveToFirst()) {
             do {
-                position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
+                positionId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION_ID))
             } while (cursor.moveToNext())
         }
-        return position
+        return positionId
+    }
+
+    fun getPositionById(id: Int): Position {
+        val args = listOf(id.toString()).toTypedArray()
+        val pinQuery = "SELECT * FROM $POSITION_TABLE WHERE $KEY_ID=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(pinQuery, args)
+        var position = ""
+        if (cursor.moveToFirst()) {
+            do {
+                position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION))
+            } while (cursor.moveToNext())
+        }
+        return Position(id, position)
     }
 
     fun getSaltByNickname(nickname: String): String? {
@@ -565,7 +639,7 @@ class DatabaseHandler(context: Context) :
         var middleName = ""
         var lastName = ""
         var email = ""
-        var position = ""
+        var positionId = 0
         var securityQuestion = ""
         var securityAnswer = ""
         var salt = ""
@@ -578,7 +652,7 @@ class DatabaseHandler(context: Context) :
                 middleName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MIDDLENAME_EMP))
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
-                position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
+                positionId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION_ID))
                 securityQuestion = cursor.getString(
                     cursor.getColumnIndexOrThrow(
                         KEY_SECURITY_QUESTION_EMP
@@ -603,7 +677,7 @@ class DatabaseHandler(context: Context) :
             middleName,
             lastName,
             email,
-            position,
+            positionId,
             securityQuestion,
             securityAnswer,
             salt,
@@ -622,7 +696,7 @@ class DatabaseHandler(context: Context) :
         var middleName = ""
         var lastName = ""
         var email = ""
-        var position = ""
+        var positionId = 0
         var securityQuestion = ""
         var securityAnswer = ""
         var salt = ""
@@ -635,7 +709,7 @@ class DatabaseHandler(context: Context) :
                 middleName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MIDDLENAME_EMP))
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
-                position = cursor.getString(cursor.getColumnIndexOrThrow(KEY_POSITION_EMP))
+                positionId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION_ID))
                 securityQuestion = cursor.getString(
                     cursor.getColumnIndexOrThrow(
                         KEY_SECURITY_QUESTION_EMP
@@ -660,7 +734,7 @@ class DatabaseHandler(context: Context) :
             middleName,
             lastName,
             email,
-            position,
+            positionId,
             securityQuestion,
             securityAnswer,
             salt,

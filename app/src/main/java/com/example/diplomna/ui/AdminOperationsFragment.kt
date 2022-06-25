@@ -15,6 +15,7 @@ import androidx.navigation.ui.NavigationUI
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentAdminOperationsBinding
 import com.example.diplomna.models.Employee
+import com.example.diplomna.models.Positions
 import com.example.diplomna.models.SecurityQuestions
 import com.example.diplomna.models.VehicleTypes
 import com.example.diplomna.util.SHA256
@@ -112,7 +113,7 @@ class AdminOperationsFragment : Fragment() {
                         middleName,
                         lastName,
                         email,
-                        position,
+                        databaseHandler.getIdByPosition(position),
                         getString(SecurityQuestions.PET.id),
                         SHA256.encrypt(salt + "admin"),
                         salt,

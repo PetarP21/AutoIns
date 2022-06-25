@@ -29,7 +29,9 @@ class LoginFragment : Fragment() {
         val isRemembered = SharedPref.readBoolean("CHECKBOX")
         val nickname = SharedPref.readString("NICKNAME")
         if(isRemembered){
-            when(databaseHandler.getPositionByNickname(nickname)){
+            val positionId = databaseHandler.getPositionIdByNickname(nickname)
+            val position = databaseHandler.getPositionById(positionId)
+            when(position.position){
                 "Админ" -> findNavController().navigate(R.id.action_loginFragment_to_adminOperationsFragment)
                 "Застраховател" -> findNavController().navigate(R.id.action_loginFragment_to_employeeOperationsFragment)
                 else -> {
@@ -61,8 +63,9 @@ class LoginFragment : Fragment() {
         val salt = databaseHandler.getSaltByNickname(nickname)
         val isValid = databaseHandler.checkLogin(nickname, SHA256.encrypt(salt+password))
         if(isValid){
-
-            when(databaseHandler.getPositionByNickname(nickname)){
+            val positionId = databaseHandler.getPositionIdByNickname(nickname)
+            val position = databaseHandler.getPositionById(positionId)
+            when(position.position){
                 "Админ" -> {
                     val action = LoginFragmentDirections.actionLoginFragmentToAdminOperationsFragment(nickname)
                     findNavController().navigate(action)

@@ -1,5 +1,6 @@
 package com.example.diplomna.util
 
+import DatabaseHandler
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.models.Employee
+import com.example.diplomna.models.Positions
 import com.example.diplomna.ui.ShowEmployersFragment
 
 class EmployeeAdapter(val context: Context, val items: ArrayList<Employee>) : RecyclerView.Adapter<EmployeeAdapter.ViewHolder>(),Filterable{
@@ -53,13 +55,15 @@ class EmployeeAdapter(val context: Context, val items: ArrayList<Employee>) : Re
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
+        val db = DatabaseHandler(context)
+        val positionObj = db.getPositionByEmployee(item)
 
         holder.nickname.text = item.nickname
         holder.firstName.text = "Име: ${item.firstName}"
         holder.middleName.text = "Презиме:"+item.middleName
         holder.lastName.text = "Фамилия: "+item.lastName
         holder.email.text = "Имейл: "+item.email
-        holder.position.text = "Позиция: "+item.position
+        holder.position.text = "Позиция: "+positionObj.position
 
         if(item.nickname=="admin") {
             holder.deleteButton.isGone = true

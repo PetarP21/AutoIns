@@ -66,7 +66,7 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         val db = DatabaseHandler(context)
-        val client = db.getClientById(item.clientId)
+        val client = db.getClientByVehicle(item)
 
         holder.licensePlate.text = item.licencePlate
         holder.clientName.text = "Клиент: ${client.firstName} ${client.lastName}"

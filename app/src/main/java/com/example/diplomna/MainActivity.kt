@@ -16,8 +16,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        addDefaultAdmin()
         addPositions()
+        addDefaultAdmin()
         invalidateInsurance()
     }
 
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         val databaseHandler = DatabaseHandler(this)
         val nicknames = databaseHandler.getNicknames()
         val salt = SHA256.salt()
-        val admin = Employee(0,"admin","admin","admin","admin","admin","Админ",
+        val admin = Employee(0,"admin","admin","admin","admin","admin",databaseHandler.getIdByPosition("Админ"),
             "admin",SHA256.encrypt(salt+"admin"),salt,SHA256.encrypt(salt+"admin"))
         if(admin.nickname !in nicknames){
             databaseHandler.addEmployee(admin)

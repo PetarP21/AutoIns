@@ -8,7 +8,7 @@ class Employee
      val middleName: String,
      val lastName: String,
      val email: String,
-     val position : String,
+     val positionId : Int,
      val securityQuestion : String,
      val securityAnswer : String,
      val salt : String,

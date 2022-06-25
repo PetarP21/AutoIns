@@ -59,7 +59,7 @@ class ForgottenPasswordFragment : Fragment() {
             val employee = databaseHandler.getEmployeeByNickname(username)
             if(employee != null) {
                 databaseHandler.updateEmployee(Employee(employee.id,employee.nickname,employee.firstName,employee.middleName,employee.lastName,employee.email,
-                    employee.position,employee.securityQuestion,employee.securityAnswer,employee.salt,SHA256.encrypt(employee.salt+"admin1")))
+                    employee.positionId,employee.securityQuestion,employee.securityAnswer,employee.salt,SHA256.encrypt(employee.salt+"admin1")))
             }
             Toast.makeText(context,"Успешно нулирана парола.", Toast.LENGTH_LONG).show()
 
