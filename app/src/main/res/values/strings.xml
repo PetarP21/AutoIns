@@ -26,5 +26,7 @@
     <string name="motherQuestion">Името на майка Ви?</string>
     <string name="jobQuestion">Името на първата Ви работа?</string>
     <string name="fatherQuestion">Родното място на баща Ви?</string>
+    <string name="admin">Админ</string>
+    <string name="insurer">Застраховател</string>
 
 </resources>

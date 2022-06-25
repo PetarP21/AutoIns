@@ -7,8 +7,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
-import com.example.diplomna.models.Employee
-import com.example.diplomna.models.Vehicle
+import com.example.diplomna.models.*
 import com.example.diplomna.util.SHA256
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,6 +17,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         addDefaultAdmin()
+        addPositions()
         invalidateInsurance()
     }
 
@@ -33,6 +33,17 @@ class MainActivity : AppCompatActivity() {
             "admin",SHA256.encrypt(salt+"admin"),salt,SHA256.encrypt(salt+"admin"))
         if(admin.nickname !in nicknames){
             databaseHandler.addEmployee(admin)
+        }
+    }
+
+    private fun addPositions(){
+        val databaseHandler = DatabaseHandler(this)
+        val positionsDb = databaseHandler.getPositions()
+        val positions = Positions.values().map { it.id }.map { getString(it) }
+        for (position in positions){
+            if(position !in positionsDb){
+                databaseHandler.addPosition(Position(0,position))
+            }
         }
     }
 
