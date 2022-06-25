@@ -7,7 +7,7 @@ class Vehicle
      val VIN: String,
      val registrationCertificate: String,
      val engine: Int,
-     val type: VehicleTypes,
+     val vehicleTypeId: Int,
      val brand: String,
      val model: String,
      val date: String,

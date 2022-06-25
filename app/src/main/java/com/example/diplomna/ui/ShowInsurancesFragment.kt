@@ -85,7 +85,7 @@ class ShowInsurancesFragment : Fragment() {
             //calling the deleteEmployee method of DatabaseHandler class to delete record
             val status = databaseHandler.deleteVehicle(
                 Vehicle(vehicle.id, vehicle.clientId, vehicle.licencePlate,vehicle.VIN,
-                vehicle.registrationCertificate,vehicle.engine,vehicle.type,vehicle.brand,vehicle.model,vehicle.date,vehicle.price,vehicle.isValid))
+                vehicle.registrationCertificate,vehicle.engine,vehicle.vehicleTypeId,vehicle.brand,vehicle.model,vehicle.date,vehicle.price,vehicle.isValid))
             if (status > -1) {
                 Toast.makeText(
                     context,

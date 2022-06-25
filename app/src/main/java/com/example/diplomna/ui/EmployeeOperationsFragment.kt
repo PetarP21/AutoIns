@@ -6,24 +6,20 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
-import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentEmployeeOperationsBinding
 import com.example.diplomna.models.Client
 import com.example.diplomna.models.Vehicle
+import com.example.diplomna.models.VehicleType
 import com.example.diplomna.models.VehicleTypes
 import com.example.diplomna.util.BaseFragment
 import com.example.diplomna.util.SharedPref
@@ -148,10 +144,11 @@ class EmployeeOperationsFragment : BaseFragment() {
     }
 
     private fun setDataByLicensePlate(licensePlate: String) {
-        val vehicle = DatabaseHandler(requireContext()).getVehicleByLicensePlate(
-            licensePlate,
-            requireContext()
+        val databaseHandler = DatabaseHandler(requireContext())
+        val vehicle = databaseHandler.getVehicleByLicensePlate(
+            licensePlate
         )
+        val vehicleType = databaseHandler.getVehicleTypeByVehicle(vehicle)
         with(binding) {
             vinVehicle.editText?.setText(vehicle.VIN)
             vinVehicle.editText?.inputType = InputType.TYPE_NULL
@@ -167,7 +164,7 @@ class EmployeeOperationsFragment : BaseFragment() {
             engine.editText?.inputType = InputType.TYPE_NULL
             engine.boxBackgroundColor = ContextCompat.getColor(requireContext(), R.color.light_gray)
 
-            typeVehicle.editText?.setText(getString(vehicle.type.id))
+            typeVehicle.editText?.setText(vehicleType.vehicleType)
             typeVehicle.boxBackgroundColor =
                 ContextCompat.getColor(requireContext(), R.color.light_gray)
             typesVehicle.dropDownHeight = 0
@@ -210,8 +207,7 @@ class EmployeeOperationsFragment : BaseFragment() {
             val VIN = vinVehicle.editText?.text.toString()
             val regCertificate = registrationCertificate.editText?.text.toString()
             val engineStr = engine.editText?.text.toString()
-            val vehicleType = VehicleTypes.values()
-                .first { getString(it.id) == typeVehicle.editText?.text.toString() }
+            val vehicleType = typeVehicle.editText?.text.toString()
             val brand = brand.editText?.text.toString()
             val model = model.editText?.text.toString()
             val date = date.editText?.text.toString()
@@ -276,11 +272,19 @@ class EmployeeOperationsFragment : BaseFragment() {
                 }
 
                 if(isPINValid && isLicensePlateValid && isRegCertificateValid && isVINValid){
-                    val statusClient = databaseHandler.addClient(
-                        Client(0, pin, firstName, middleName, lastName)
-                    )
+                    var isNewClient = false
+                    val clients = databaseHandler.getAllClients()
+                    for(client in clients){
+                        if (client.PIN != pin){
+                            isNewClient = true
+                        }
+                    }
+                    if(isNewClient){
+                        databaseHandler.addClient(
+                            Client(0, pin, firstName, middleName, lastName)
+                        )
+                    }
                     val statusVehicle = databaseHandler.addVehicle(
-                        requireContext(),
                         Vehicle(
                             0,
                             databaseHandler.getIdByPIN(pin),
@@ -288,7 +292,7 @@ class EmployeeOperationsFragment : BaseFragment() {
                             VIN,
                             regCertificate,
                             engineStr.toInt(),
-                            vehicleType,
+                            databaseHandler.getIdByVehicleType(vehicleType),
                             brand,
                             model,
                             date,
@@ -296,7 +300,7 @@ class EmployeeOperationsFragment : BaseFragment() {
                             true
                         )
                     )
-                    if (statusClient > -1 && statusVehicle > -1) {
+                    if (statusVehicle > -1) {
                         Toast.makeText(context, "Успешно добавена застраховка.", Toast.LENGTH_LONG).show()
                         with(binding) {
                             pinClient.editText?.text?.clear()

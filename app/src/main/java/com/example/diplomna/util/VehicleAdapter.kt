@@ -67,13 +67,14 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
         val item = items[position]
         val db = DatabaseHandler(context)
         val client = db.getClientByVehicle(item)
+        val vehicleType = db.getVehicleTypeByVehicle(item)
 
         holder.licensePlate.text = item.licencePlate
         holder.clientName.text = "Клиент: ${client.firstName} ${client.lastName}"
         holder.VIN.text = "Идентификационен номер: "+item.VIN
         holder.registrationCertificate.text = "№ на рег. сертификат: "+item.registrationCertificate
         holder.engine.text = "Обем на двигателя: "+item.engine.toString()
-        holder.type.text = "Вид: "+context.getString(item.type.id)
+        holder.type.text = "Вид: "+ vehicleType.vehicleType
         holder.brand.text = "Марка: "+item.brand
         holder.model.text = "Модел: "+item.model
         holder.date.text = "Дата на сключване: "+item.date

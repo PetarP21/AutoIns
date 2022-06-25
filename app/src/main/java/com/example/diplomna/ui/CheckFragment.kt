@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.diplomna.R
@@ -38,7 +37,7 @@ class CheckFragment : Fragment() {
                 Pattern.compile("[ABEKMHOPCTYX]{1,2}[0-9]{4}[ABEKMHOPCTYX]{2}")
             if (patternLicensePlate.matcher(licensePlate).matches()) {
                 val vehicle =
-                    databaseHandler.getVehicleByLicensePlate(licensePlate, requireContext())
+                    databaseHandler.getVehicleByLicensePlate(licensePlate)
                 if (vehicle.isValid) {
                     binding.answer.text =
                         "МПС с регистрационен номер ${vehicle.licencePlate} ИМА валидна застраховка 'Гражданска отговорност'."

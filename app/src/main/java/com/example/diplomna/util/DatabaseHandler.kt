@@ -4,7 +4,6 @@ import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.icu.text.Transliterator
 import com.example.diplomna.models.*
 
 //creating the database logic, extending the SQLiteOpenHelper base class
@@ -25,6 +24,7 @@ class DatabaseHandler(context: Context) :
         private const val CLIENT_TABLE = "Client_Table"
         private const val VEHICLE_TABLE = "Vehicle_Table"
         private const val POSITION_TABLE = "Position_Table"
+        private const val VEHICLE_TYPE_TABLE = "Vehicle_type_Table"
 
         private const val KEY_ID = "_id"
 
@@ -40,6 +40,8 @@ class DatabaseHandler(context: Context) :
         private const val KEY_PASSWORD_EMP = "password"
 
         private const val KEY_POSITION = "position"
+
+        private const val KEY_VEHICLE_TYPE = "vehicle_type"
 
         /*
         едно към много - клиент към МПС
@@ -57,7 +59,7 @@ class DatabaseHandler(context: Context) :
         private const val KEY_VIN_VEHICLE = "VIN"
         private const val KEY_REGISTRATION_CERTIFICATE_VEHICLE = "registration_certificate"
         private const val KEY_ENGINE_VEHICLE = "engine"
-        private const val KEY_TYPE_VEHICLE = "vehicle_type"
+        private const val KEY_TYPE_VEHICLE_ID = "vehicle_type_id"
         private const val KEY_BRAND_VEHICLE = "brand"
         private const val KEY_MODEL_VEHICLE = "model"
         private const val KEY_DATE = "date"
@@ -92,6 +94,11 @@ class DatabaseHandler(context: Context) :
                 + KEY_POSITION + " TEXT" + ")")
         db?.execSQL(CREATE_POSITION_TABLE)
 
+        val CREATE_VEHICLE_TYPE_TABLE = ("CREATE TABLE " + VEHICLE_TYPE_TABLE + "("
+                + KEY_ID + " INTEGER PRIMARY KEY,"
+                + KEY_VEHICLE_TYPE + " TEXT" + ")")
+        db?.execSQL(CREATE_VEHICLE_TYPE_TABLE)
+
         val CREATE_CLIENT_TABLE = ("CREATE TABLE " + CLIENT_TABLE + "("
                 + KEY_ID + " INTEGER PRIMARY KEY,"
                 + KEY_PIN_CLIENT + " TEXT,"
@@ -107,7 +114,7 @@ class DatabaseHandler(context: Context) :
                 + KEY_VIN_VEHICLE + " TEXT,"
                 + KEY_REGISTRATION_CERTIFICATE_VEHICLE + " TEXT,"
                 + KEY_ENGINE_VEHICLE + " INTEGER,"
-                + KEY_TYPE_VEHICLE + " TEXT,"
+                + KEY_TYPE_VEHICLE_ID + " INTEGER,"
                 + KEY_BRAND_VEHICLE + " TEXT,"
                 + KEY_MODEL_VEHICLE + " TEXT,"
                 + KEY_DATE + " TEXT,"
@@ -115,10 +122,12 @@ class DatabaseHandler(context: Context) :
                 + KEY_VALID + " INTEGER,"
                 + " CONSTRAINT fk_clients"
                 + " FOREIGN KEY(" + KEY_CLIENT_ID + ") REFERENCES " + CLIENT_TABLE + "(" + KEY_ID + ")"
+                + " ON DELETE CASCADE,"
+                + " CONSTRAINT fk_vehicle_types"
+                + " FOREIGN KEY(" + KEY_TYPE_VEHICLE_ID + ") REFERENCES " + VEHICLE_TYPE_TABLE + "(" + KEY_ID + ")"
                 + " ON DELETE CASCADE"
                 + ")")
         db?.execSQL(CREATE_VEHICLE_TABLE)
-
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -145,8 +154,8 @@ class DatabaseHandler(context: Context) :
     fun updatePosition(position: Position): Int {
         val db = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(KEY_POSITION,position.position)
-        val success = db.update(POSITION_TABLE,contentValues, KEY_ID + " = " + position.id,null)
+        contentValues.put(KEY_POSITION, position.position)
+        val success = db.update(POSITION_TABLE, contentValues, KEY_ID + " = " + position.id, null)
         db.close()
         return success
     }
@@ -161,6 +170,61 @@ class DatabaseHandler(context: Context) :
         }
         db.close()
         return success
+    }
+
+    fun addVehicleType(vehicleType: VehicleType): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(KEY_VEHICLE_TYPE, vehicleType.vehicleType)
+        val success = db.insert(VEHICLE_TYPE_TABLE, null, contentValues)
+        db.close()
+        return success
+    }
+
+    fun updateVehicleType(vehicleType: VehicleType): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(KEY_VEHICLE_TYPE, vehicleType.vehicleType)
+        val success =
+            db.update(VEHICLE_TYPE_TABLE, contentValues, KEY_ID + " = " + vehicleType.id, null)
+        db.close()
+        return success
+    }
+
+    fun deleteVehicleType(vehicleType: VehicleType): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(KEY_VEHICLE_TYPE, vehicleType.vehicleType)
+        var success = -1
+        if (vehicleType.id != 1) {
+            success = db.delete(VEHICLE_TYPE_TABLE, KEY_ID + "=" + vehicleType.id, null)
+        }
+        db.close()
+        return success
+    }
+
+    fun getVehicleTypes(): MutableList<String> {
+        val vehicleTypes = mutableListOf<String>()
+        val vehicleTypesQuery = "SELECT $KEY_VEHICLE_TYPE FROM $VEHICLE_TYPE_TABLE"
+
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+
+        try {
+            cursor = db.rawQuery(vehicleTypesQuery, null)
+        } catch (e: SQLException) {
+            db.execSQL(vehicleTypesQuery)
+            return ArrayList()
+        }
+
+        var vehicleType: String
+        if (cursor.moveToFirst()) {
+            do {
+                vehicleType = cursor.getString(cursor.getColumnIndexOrThrow(KEY_VEHICLE_TYPE))
+                vehicleTypes.add(vehicleType)
+            } while (cursor.moveToNext())
+        }
+        return vehicleTypes
     }
 
     fun getPositions(): MutableList<String> {
@@ -192,7 +256,7 @@ class DatabaseHandler(context: Context) :
         val pinQuery = "SELECT $KEY_ID FROM $POSITION_TABLE WHERE $KEY_POSITION=?"
         val db = this.readableDatabase
         val cursor = db.rawQuery(pinQuery, args)
-        var id: Int = 0
+        var id = 0
         if (cursor.moveToFirst()) {
             do {
                 id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
@@ -201,8 +265,21 @@ class DatabaseHandler(context: Context) :
         return id
     }
 
-    // ******************************************
-    fun getClientByVehicle(vehicle: Vehicle) : Client{
+    fun getIdByVehicleType(vehicleType: String): Int {
+        val args = listOf(vehicleType).toTypedArray()
+        val pinQuery = "SELECT $KEY_ID FROM $VEHICLE_TYPE_TABLE WHERE $KEY_VEHICLE_TYPE=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(pinQuery, args)
+        var id = 0
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
+            } while (cursor.moveToNext())
+        }
+        return id
+    }
+
+    fun getClientByVehicle(vehicle: Vehicle): Client {
         val vehicleQuery = "SELECT * FROM $VEHICLE_TABLE" +
                 " INNER JOIN $CLIENT_TABLE ON $VEHICLE_TABLE.$KEY_CLIENT_ID = $CLIENT_TABLE.$KEY_ID WHERE $CLIENT_TABLE.$KEY_ID=?"
         val db = this.readableDatabase
@@ -224,7 +301,24 @@ class DatabaseHandler(context: Context) :
         }
         return Client(id, pin, firstName, middleName, lastName)
     }
-    // ******************************************
+
+    fun getVehicleTypeByVehicle(vehicle: Vehicle): VehicleType {
+        val vehicleQuery = "SELECT * FROM $VEHICLE_TABLE" +
+                " INNER JOIN $VEHICLE_TYPE_TABLE ON $VEHICLE_TABLE.$KEY_TYPE_VEHICLE_ID = $VEHICLE_TYPE_TABLE.$KEY_ID WHERE $VEHICLE_TYPE_TABLE.$KEY_ID=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(vehicleQuery, arrayOf(vehicle.vehicleTypeId.toString()))
+        var id = 0
+        var vehicleType = ""
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE_ID))
+                vehicleType = cursor.getString(cursor.getColumnIndexOrThrow(KEY_VEHICLE_TYPE))
+            } while (cursor.moveToNext())
+        }
+        return VehicleType(id, vehicleType)
+    }
+
+
 
     fun getPositionByEmployee(employee: Employee): Position {
         val positionQuery = "SELECT * FROM $EMPLOYEE_TABLE" +
@@ -241,6 +335,7 @@ class DatabaseHandler(context: Context) :
         }
         return Position(id, position)
     }
+
 
 
 
@@ -347,7 +442,7 @@ class DatabaseHandler(context: Context) :
         return success
     }
 
-    fun addVehicle(context: Context, vehicle: Vehicle): Long {
+    fun addVehicle(vehicle: Vehicle): Long {
         val db = this.writableDatabase
 
         val contentValues = ContentValues()
@@ -356,10 +451,7 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_VIN_VEHICLE, vehicle.VIN)
         contentValues.put(KEY_REGISTRATION_CERTIFICATE_VEHICLE, vehicle.registrationCertificate)
         contentValues.put(KEY_ENGINE_VEHICLE, vehicle.engine)
-        contentValues.put(
-            KEY_TYPE_VEHICLE,
-            context.getString(vehicle.type.id)/*R.id(vehicle.type.id)*/
-        )
+        contentValues.put(KEY_TYPE_VEHICLE_ID, vehicle.vehicleTypeId)
         contentValues.put(KEY_BRAND_VEHICLE, vehicle.brand)
         contentValues.put(KEY_MODEL_VEHICLE, vehicle.model)
         contentValues.put(KEY_DATE, vehicle.date)
@@ -371,7 +463,7 @@ class DatabaseHandler(context: Context) :
         return success
     }
 
-    fun updateVehicle(context: Context, vehicle: Vehicle): Int {
+    fun updateVehicle(vehicle: Vehicle): Int {
         val db = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(KEY_CLIENT_ID, vehicle.clientId)
@@ -379,7 +471,7 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_VIN_VEHICLE, vehicle.VIN)
         contentValues.put(KEY_REGISTRATION_CERTIFICATE_VEHICLE, vehicle.registrationCertificate)
         contentValues.put(KEY_ENGINE_VEHICLE, vehicle.engine)
-        contentValues.put(KEY_TYPE_VEHICLE, context.getString(vehicle.type.id))
+        contentValues.put(KEY_TYPE_VEHICLE_ID, vehicle.vehicleTypeId)
         contentValues.put(KEY_BRAND_VEHICLE, vehicle.brand)
         contentValues.put(KEY_MODEL_VEHICLE, vehicle.model)
         contentValues.put(KEY_DATE, vehicle.date)
@@ -437,10 +529,16 @@ class DatabaseHandler(context: Context) :
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
                 positionId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION_ID))
-                securityQuestion = cursor.getString(cursor.getColumnIndexOrThrow(
-                    KEY_SECURITY_QUESTION_EMP))
-                securityAnswer = cursor.getString(cursor.getColumnIndexOrThrow(
-                    KEY_SECURITY_ANSWER_EMP))
+                securityQuestion = cursor.getString(
+                    cursor.getColumnIndexOrThrow(
+                        KEY_SECURITY_QUESTION_EMP
+                    )
+                )
+                securityAnswer = cursor.getString(
+                    cursor.getColumnIndexOrThrow(
+                        KEY_SECURITY_ANSWER_EMP
+                    )
+                )
                 salt = cursor.getString(cursor.getColumnIndexOrThrow(KEY_SALT_EMP))
                 password = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD_EMP))
 
@@ -742,7 +840,7 @@ class DatabaseHandler(context: Context) :
         )
     }
 
-    fun getVehicleByLicensePlate(licensePlate: String, context: Context): Vehicle {
+    fun getVehicleByLicensePlate(licensePlate: String): Vehicle {
         val args = listOf(licensePlate).toTypedArray()
         val pinQuery = "SELECT * FROM $VEHICLE_TABLE WHERE $KEY_LICENSE_PLATE_VEHICLE=?"
         val db = this.readableDatabase
@@ -753,7 +851,7 @@ class DatabaseHandler(context: Context) :
         var VIN = ""
         var registrationCertificate = ""
         var engine = 0
-        var type = ""
+        var vehicleTypeId = 0
         var brand = ""
         var model = ""
         var date = ""
@@ -770,7 +868,7 @@ class DatabaseHandler(context: Context) :
                     cursor.getColumnIndexOrThrow(KEY_REGISTRATION_CERTIFICATE_VEHICLE)
                 )
                 engine = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENGINE_VEHICLE))
-                type = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE))
+                vehicleTypeId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE_ID))
                 brand = cursor.getString(cursor.getColumnIndexOrThrow(KEY_BRAND_VEHICLE))
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
@@ -778,14 +876,14 @@ class DatabaseHandler(context: Context) :
                 if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
             } while (cursor.moveToNext())
         }
-        if (type == "") {
+       /* if (type == "") {
             type = context.getString(VehicleTypes.CAR.id)
         }
         var vehicleType = VehicleTypes.CAR
         if (type != "") {
             vehicleType =
                 VehicleTypes.values().first { context.getString(it.id) == type }
-        }
+        } */
         return Vehicle(
             id,
             clientId,
@@ -793,7 +891,7 @@ class DatabaseHandler(context: Context) :
             VIN,
             registrationCertificate,
             engine,
-            vehicleType,
+            vehicleTypeId,
             brand,
             model,
             date,
@@ -813,7 +911,7 @@ class DatabaseHandler(context: Context) :
         var VIN = ""
         var registrationCertificate = ""
         var engine = 0
-        var type = ""
+        var vehicleTypeId = 0
         var brand = ""
         var model = ""
         var date = ""
@@ -830,7 +928,7 @@ class DatabaseHandler(context: Context) :
                     cursor.getColumnIndexOrThrow(KEY_REGISTRATION_CERTIFICATE_VEHICLE)
                 )
                 engine = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENGINE_VEHICLE))
-                type = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE))
+                vehicleTypeId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE_ID))
                 brand = cursor.getString(cursor.getColumnIndexOrThrow(KEY_BRAND_VEHICLE))
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
@@ -841,11 +939,13 @@ class DatabaseHandler(context: Context) :
         if (VIN == "") {
             return null
         }
+        /*
         var vehicleType = VehicleTypes.CAR
         if (type != "") {
             vehicleType =
                 VehicleTypes.values().first { context.getString(it.id) == type }
         }
+         */
         return Vehicle(
             id,
             clientId,
@@ -853,7 +953,7 @@ class DatabaseHandler(context: Context) :
             VIN,
             registrationCertificate,
             engine,
-            vehicleType,
+            vehicleTypeId,
             brand,
             model,
             date,
@@ -876,7 +976,7 @@ class DatabaseHandler(context: Context) :
         var VIN = ""
         var registrationCertificate = ""
         var engine = 0
-        var type = ""
+        var vehicleTypeId = 0
         var brand = ""
         var model = ""
         var date = ""
@@ -893,7 +993,7 @@ class DatabaseHandler(context: Context) :
                     cursor.getColumnIndexOrThrow(KEY_REGISTRATION_CERTIFICATE_VEHICLE)
                 )
                 engine = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENGINE_VEHICLE))
-                type = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE))
+                vehicleTypeId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE_ID))
                 brand = cursor.getString(cursor.getColumnIndexOrThrow(KEY_BRAND_VEHICLE))
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
@@ -904,11 +1004,13 @@ class DatabaseHandler(context: Context) :
         if (registrationCertificate == "") {
             return null
         }
+        /*
         var vehicleType = VehicleTypes.CAR
         if (type != "") {
             vehicleType =
                 VehicleTypes.values().first { context.getString(it.id) == type }
         }
+         */
         return Vehicle(
             id,
             clientId,
@@ -916,7 +1018,7 @@ class DatabaseHandler(context: Context) :
             VIN,
             registrationCertificate,
             engine,
-            vehicleType,
+            vehicleTypeId,
             brand,
             model,
             date,
@@ -995,7 +1097,7 @@ class DatabaseHandler(context: Context) :
         var VIN: String
         var registrationCertificate: String
         var engine: Int
-        var type: String
+        var vehicleTypeId: Int
         var brand: String
         var model: String
         var date: String
@@ -1013,14 +1115,14 @@ class DatabaseHandler(context: Context) :
                     cursor.getColumnIndexOrThrow(KEY_REGISTRATION_CERTIFICATE_VEHICLE)
                 )
                 engine = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENGINE_VEHICLE))
-                type = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE))
+                vehicleTypeId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE_ID))
                 brand = cursor.getString(cursor.getColumnIndexOrThrow(KEY_BRAND_VEHICLE))
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
                 price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
                 if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
 
-                val typeVehicle = VehicleTypes.values().first { context.getString(it.id) == type }
+                // val typeVehicle = VehicleTypes.values().first { context.getString(it.id) == type }
                 val vehicle = Vehicle(
                     id,
                     clientId,
@@ -1028,7 +1130,7 @@ class DatabaseHandler(context: Context) :
                     VIN,
                     registrationCertificate,
                     engine,
-                    typeVehicle,
+                    vehicleTypeId,
                     brand,
                     model,
                     date,
@@ -1057,7 +1159,7 @@ class DatabaseHandler(context: Context) :
         var VIN: String
         var registrationCertificate: String
         var engine: Int
-        var type: String
+        var vehicleTypeId: Int
         var brand: String
         var model: String
         var date: String
@@ -1075,14 +1177,14 @@ class DatabaseHandler(context: Context) :
                     cursor.getColumnIndexOrThrow(KEY_REGISTRATION_CERTIFICATE_VEHICLE)
                 )
                 engine = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENGINE_VEHICLE))
-                type = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE))
+                vehicleTypeId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_TYPE_VEHICLE_ID))
                 brand = cursor.getString(cursor.getColumnIndexOrThrow(KEY_BRAND_VEHICLE))
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
                 price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
                 if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
 
-                val typeVehicle = VehicleTypes.values().first { context.getString(it.id) == type }
+                // val typeVehicle = VehicleTypes.values().first { context.getString(it.id) == type }
                 val vehicle = Vehicle(
                     id,
                     clientId,
@@ -1090,7 +1192,7 @@ class DatabaseHandler(context: Context) :
                     VIN,
                     registrationCertificate,
                     engine,
-                    typeVehicle,
+                    vehicleTypeId,
                     brand,
                     model,
                     date,

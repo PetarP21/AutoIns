@@ -11,7 +11,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.diplomna.MainActivity
 import com.example.diplomna.R
@@ -128,8 +127,10 @@ class ShowClientsFragment : BaseFragment() {
                         for(vehicle in vehicles){
                             val engine = vehicle.engine
                             val price = calcPrice(engine,age)
-                            databaseHandler.updateVehicle(requireContext(),Vehicle(vehicle.id,vehicle.clientId,vehicle.licencePlate,vehicle.VIN,vehicle.registrationCertificate,
-                            vehicle.engine,vehicle.type,vehicle.brand,vehicle.model,vehicle.date,price,vehicle.isValid))
+                            databaseHandler.updateVehicle(
+                                Vehicle(vehicle.id,vehicle.clientId,vehicle.licencePlate,vehicle.VIN,vehicle.registrationCertificate,
+                                vehicle.engine,vehicle.vehicleTypeId,vehicle.brand,vehicle.model,vehicle.date,price,vehicle.isValid)
+                            )
                         }
                     }
 

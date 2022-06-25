@@ -2,10 +2,7 @@ package com.example.diplomna
 
 import DatabaseHandler
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import com.example.diplomna.models.*
 import com.example.diplomna.util.SHA256
@@ -17,6 +14,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         addPositions()
+        addVehicleTypes()
         addDefaultAdmin()
         invalidateInsurance()
     }
@@ -47,6 +45,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun addVehicleTypes(){
+        val databaseHandler = DatabaseHandler(this)
+        val vehicleTypesDb = databaseHandler.getVehicleTypes()
+        val vehicleTypes = VehicleTypes.values().map { it.id }.map { getString(it) }
+        for (vehicleType in vehicleTypes){
+            if(vehicleType !in vehicleTypesDb){
+                databaseHandler.addVehicleType(VehicleType(0,vehicleType))
+            }
+        }
+    }
+
     private fun invalidateInsurance(){
         val db = DatabaseHandler(this)
         val vehicles = db.getAllVehicles(context = this)
@@ -60,10 +69,12 @@ class MainActivity : AppCompatActivity() {
             val hours = minutes / 60
             val days = hours / 24
             if(days>365){
-                db.updateVehicle(this,Vehicle(vehicle.id,vehicle.clientId,vehicle.licencePlate,
-                    vehicle.VIN,vehicle.registrationCertificate,
-                    vehicle.engine,vehicle.type,vehicle.brand,vehicle.model,
-                    vehicle.date,vehicle.price,isValid = false))
+                db.updateVehicle(
+                    Vehicle(vehicle.id,vehicle.clientId,vehicle.licencePlate,
+                        vehicle.VIN,vehicle.registrationCertificate,
+                        vehicle.engine,vehicle.vehicleTypeId,vehicle.brand,vehicle.model,
+                        vehicle.date,vehicle.price,isValid = false)
+                )
             }
         }
     }
