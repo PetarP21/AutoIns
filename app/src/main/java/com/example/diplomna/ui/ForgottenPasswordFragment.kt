@@ -54,15 +54,18 @@ class ForgottenPasswordFragment : Fragment() {
         val securityQuestion = binding.questionsTextInput.editText?.text.toString()
         val securityAnswer = binding.answerTextInput.editText?.text.toString()
         val salt = databaseHandler.getSaltByNickname(username)
-        val isValid = databaseHandler.checkPasswordReset(username,securityQuestion,SHA256.encrypt(salt+securityAnswer))
+        val isValid = databaseHandler.checkPasswordReset(username,databaseHandler.getIdBySecurityQuestion(securityQuestion),SHA256.encrypt(salt+securityAnswer))
         if(isValid){
             val employee = databaseHandler.getEmployeeByNickname(username)
             if(employee != null) {
                 databaseHandler.updateEmployee(Employee(employee.id,employee.nickname,employee.firstName,employee.middleName,employee.lastName,employee.email,
-                    employee.positionId,employee.securityQuestion,employee.securityAnswer,employee.salt,SHA256.encrypt(employee.salt+"admin1")))
+                    employee.positionId,employee.securityQuestionId,employee.securityAnswer,employee.salt,SHA256.encrypt(employee.salt+"admin")))
             }
-            Toast.makeText(context,"Успешно нулирана парола.", Toast.LENGTH_LONG).show()
-
+            Toast.makeText(context,"Успешно нулирана парола. Новата ви парола е 'admin'. Моля, променете при следващо влизане в профила.", Toast.LENGTH_LONG).show()
+            with(binding){
+                usernameForgottenPasswordTextInput.editText?.text?.clear()
+                answerTextInput.editText?.text?.clear()
+            }
         } else {
             Toast.makeText(context,"Данните не съвпадат.", Toast.LENGTH_LONG).show()
         }

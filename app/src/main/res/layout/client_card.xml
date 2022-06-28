@@ -68,16 +68,7 @@
             android:scaleType="center"
             android:src="@drawable/edit_red"
             app:layout_constraintTop_toBottomOf="@id/lastName_textView"
-            app:layout_constraintStart_toStartOf="@id/lastName_textView" />
-        <ImageView
-            android:id="@+id/delete_client"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:scaleType="center"
-            android:src="@drawable/delete_red"
-            app:layout_constraintTop_toBottomOf="@id/lastName_textView"
             app:layout_constraintEnd_toEndOf="@id/lastName_textView" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

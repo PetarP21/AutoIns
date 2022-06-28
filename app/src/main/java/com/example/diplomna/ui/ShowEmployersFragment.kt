@@ -92,7 +92,7 @@ class ShowEmployersFragment : Fragment() {
                     employee.lastName,
                     employee.email,
                     employee.positionId,
-                    employee.securityQuestion,
+                    employee.securityQuestionId,
                     employee.securityAnswer,
                     employee.salt,
                     employee.password
@@ -185,7 +185,7 @@ class ShowEmployersFragment : Fragment() {
                                 lastName,
                                 email,
                                 employee.positionId,
-                                employee.securityQuestion,
+                                employee.securityQuestionId,
                                 employee.securityAnswer,
                                 employee.salt,
                                 employee.password

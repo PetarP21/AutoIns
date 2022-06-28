@@ -9,10 +9,13 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.models.Employee
+import com.example.diplomna.models.ValidityOptions
 import com.example.diplomna.models.Vehicle
 import com.example.diplomna.ui.ShowInsurancesFragment
 
@@ -35,6 +38,7 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
         val date: TextView
         val price: TextView
         val isValid: TextView
+        val updateButton: ImageView
         val deleteButton: ImageView
 
         init {
@@ -49,6 +53,7 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
             date = view.findViewById(R.id.date_textView)
             price = view.findViewById(R.id.price_textView)
             isValid = view.findViewById(R.id.isValid_textView)
+            updateButton = view.findViewById(R.id.update_ins)
             deleteButton = view.findViewById(R.id.delete_ins)
         }
     }
@@ -68,6 +73,7 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
         val db = DatabaseHandler(context)
         val client = db.getClientByVehicle(item)
         val vehicleType = db.getVehicleTypeByVehicle(item)
+        val validity = db.getValidityByVehicle(item)
 
         holder.licensePlate.text = item.licencePlate
         holder.clientName.text = "Клиент: ${client.firstName} ${client.lastName}"
@@ -79,10 +85,19 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
         holder.model.text = "Модел: "+item.model
         holder.date.text = "Дата на сключване: "+item.date
         holder.price.text = "Застрахователна премия: "+item.price.toString()
-        if(item.isValid) {
+        if(validity.validity == context.getString(ValidityOptions.YES.id).toInt()) {
             holder.isValid.text = "Валидност: Валидна"
         } else {
             holder.isValid.text = "Валидност: Невалидна"
+        }
+
+        holder.updateButton.setOnClickListener{
+            if(context is MainActivity){
+                val navFragment = context.supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.childFragmentManager?.fragments?.first()
+                if(navFragment is ShowInsurancesFragment){
+                    navFragment.updateInsurance(item)
+                }
+            }
         }
 
         holder.deleteButton.setOnClickListener {

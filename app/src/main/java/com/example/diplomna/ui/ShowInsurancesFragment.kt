@@ -2,7 +2,6 @@ package com.example.diplomna.ui
 
 import DatabaseHandler
 import android.app.AlertDialog
-import android.app.Dialog
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
@@ -10,14 +9,12 @@ import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentShowInsurancesBinding
-import com.example.diplomna.models.Employee
 import com.example.diplomna.models.Vehicle
-import com.example.diplomna.util.ClientAdapter
-import com.example.diplomna.util.EmployeeAdapter
 import com.example.diplomna.util.VehicleAdapter
 
 
@@ -66,7 +63,12 @@ class ShowInsurancesFragment : Fragment() {
         //creating the instance of DatabaseHandler class
         val databaseHandler = DatabaseHandler(requireContext())
         //calling the viewEmployee method of DatabaseHandler class to read the records
-        return databaseHandler.getAllVehicles(requireContext())
+        return databaseHandler.getAllVehicles()
+    }
+
+    fun updateInsurance(vehicle: Vehicle){
+        val action = ShowInsurancesFragmentDirections.actionShowInsurancesFragmentToUpdateInsuranceFragment(vehicle)
+        findNavController().navigate(action)
     }
 
     fun deleteInsuranceRecordAlertDialog(vehicle: Vehicle) {
@@ -85,7 +87,7 @@ class ShowInsurancesFragment : Fragment() {
             //calling the deleteEmployee method of DatabaseHandler class to delete record
             val status = databaseHandler.deleteVehicle(
                 Vehicle(vehicle.id, vehicle.clientId, vehicle.licencePlate,vehicle.VIN,
-                vehicle.registrationCertificate,vehicle.engine,vehicle.vehicleTypeId,vehicle.brand,vehicle.model,vehicle.date,vehicle.price,vehicle.isValid))
+                vehicle.registrationCertificate,vehicle.engine,vehicle.vehicleTypeId,vehicle.brand,vehicle.model,vehicle.date,vehicle.price,vehicle.validityId))
             if (status > -1) {
                 Toast.makeText(
                     context,

@@ -28,7 +28,6 @@ class ClientAdapter(val context: Context, val items: ArrayList<Client>) : Recycl
         val middleName: TextView
         val lastName: TextView
         val updateButton: ImageView
-        val deleteButton: ImageView
 
         init {
             pin = view.findViewById(R.id.pin_textView)
@@ -36,7 +35,6 @@ class ClientAdapter(val context: Context, val items: ArrayList<Client>) : Recycl
             middleName = view.findViewById(R.id.middleName_textView)
             lastName = view.findViewById(R.id.lastName_textView)
             updateButton = view.findViewById(R.id.edit_client)
-            deleteButton = view.findViewById(R.id.delete_client)
         }
     }
 
@@ -59,14 +57,14 @@ class ClientAdapter(val context: Context, val items: ArrayList<Client>) : Recycl
         holder.lastName.text = "Фамилия: "+item.lastName
 
 
-        holder.deleteButton.setOnClickListener {
+      /*  holder.deleteButton.setOnClickListener {
             if (context is MainActivity) {
                 val navFragment = context.supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.childFragmentManager?.fragments?.first()
                 if(navFragment is ShowClientsFragment){
                     navFragment.deleteClientRecordAlertDialog(item)
                 }
             }
-        }
+        } */
 
         holder.updateButton.setOnClickListener {
             if (context is MainActivity) {

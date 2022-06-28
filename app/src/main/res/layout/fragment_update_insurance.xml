@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".ui.UpdateInsuranceFragment">
+
+                <TextView
+                    android:id="@+id/client_data"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_3x"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:layout_marginRight="@dimen/margin_3x"
+                    android:text="Данни на клиента:"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_2.5x"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/pin_client"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_3x"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:layout_marginRight="@dimen/margin_3x"
+                    android:hint="ЕГН*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="10"
+                    app:counterTextColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/client_data">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/PINs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:inputType="number"
+                        android:maxLength="10"
+                        android:paddingLeft="@dimen/margin_1.5x"
+                        android:paddingTop="@dimen/margin_2x"
+                        android:paddingRight="@dimen/margin_1.5x"
+                        android:paddingBottom="@dimen/margin_1.5x"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/firstname_client"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_3x"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:layout_marginRight="@dimen/margin_3x"
+                    android:hint="Име*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/pin_client">
+
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/margin_1.5x"
+                        android:paddingTop="@dimen/margin_2x"
+                        android:paddingRight="@dimen/margin_1.5x"
+                        android:paddingBottom="@dimen/margin_1.5x"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/middlename_client"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:hint="Презиме*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:counterTextColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="@id/firstname_client"
+                    app:layout_constraintStart_toStartOf="@id/firstname_client"
+                    app:layout_constraintTop_toBottomOf="@+id/firstname_client">
+
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/margin_1.5x"
+                        android:paddingTop="@dimen/margin_2x"
+                        android:paddingRight="@dimen/margin_1.5x"
+                        android:paddingBottom="@dimen/margin_1.5x"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/lastname_client"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:hint="Фамилия*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="@id/middlename_client"
+                    app:layout_constraintStart_toStartOf="@id/middlename_client"
+                    app:layout_constraintTop_toBottomOf="@+id/middlename_client">
+
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/margin_1.5x"
+                        android:paddingTop="@dimen/margin_2x"
+                        android:paddingRight="@dimen/margin_1.5x"
+                        android:paddingBottom="@dimen/margin_1.5x"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/update_client_data"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:backgroundTint="@color/orange"
+                    android:text="Промени клиент"
+                    android:textSize="@dimen/size_1.5x"
+                    app:layout_constraintEnd_toEndOf="@id/lastname_client"
+                    app:layout_constraintStart_toStartOf="@id/lastname_client"
+                    app:layout_constraintTop_toBottomOf="@+id/lastname_client" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/license_plate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2x"
+                    android:hint="Регистрационен номер*"
+                    android:textColorHint="@color/orange"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxStrokeColor="@color/orange"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="8"
+                    app:counterTextColor="@color/orange"
+                    app:errorEnabled="true"
+                    app:layout_constraintEnd_toEndOf="@id/lastname_client"
+                    app:layout_constraintStart_toStartOf="@id/lastname_client"
+                    app:layout_constraintTop_toBottomOf="@+id/update_client_data">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/licensePlates"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:maxLength="8"
+                        android:paddingLeft="@dimen/margin_1.5x"
+                        android:paddingTop="@dimen/margin_2x"
+                        android:paddingRight="@dimen/margin_1.5x"
+                        android:paddingBottom="@dimen/margin_1.5x"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/update_license_plate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_x"
+                    android:backgroundTint="@color/orange"
+                    android:text="Промени регистрационен номер"
+                    android:textSize="@dimen/size_1.5x"
+                    app:layout_constraintEnd_toEndOf="@id/license_plate"
+                    app:layout_constraintStart_toStartOf="@id/license_plate"
+                    app:layout_constraintTop_toBottomOf="@+id/license_plate" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/orange"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="Редактиране на застраховка" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

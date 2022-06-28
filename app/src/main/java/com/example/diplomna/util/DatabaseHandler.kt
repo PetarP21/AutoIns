@@ -25,6 +25,8 @@ class DatabaseHandler(context: Context) :
         private const val VEHICLE_TABLE = "Vehicle_Table"
         private const val POSITION_TABLE = "Position_Table"
         private const val VEHICLE_TYPE_TABLE = "Vehicle_type_Table"
+        private const val VALIDITY_TABLE = "Validity_Table"
+        private const val SECURITY_QUESTION_TABLE = "Security_question_Table"
 
         private const val KEY_ID = "_id"
 
@@ -34,7 +36,7 @@ class DatabaseHandler(context: Context) :
         private const val KEY_LASTNAME_EMP = "last_name"
         private const val KEY_EMAIL_EMP = "email"
         private const val KEY_POSITION_ID = "position_id"
-        private const val KEY_SECURITY_QUESTION_EMP = "security_question"
+        private const val KEY_SECURITY_QUESTION_ID = "security_question_id"
         private const val KEY_SECURITY_ANSWER_EMP = "security_answer"
         private const val KEY_SALT_EMP = "salt"
         private const val KEY_PASSWORD_EMP = "password"
@@ -42,6 +44,10 @@ class DatabaseHandler(context: Context) :
         private const val KEY_POSITION = "position"
 
         private const val KEY_VEHICLE_TYPE = "vehicle_type"
+
+        private const val KEY_VALIDITY = "validity"
+
+        private const val KEY_SECURITY_QUESTION = "security_question"
 
         /*
         едно към много - клиент към МПС
@@ -64,7 +70,7 @@ class DatabaseHandler(context: Context) :
         private const val KEY_MODEL_VEHICLE = "model"
         private const val KEY_DATE = "date"
         private const val KEY_PRICE = "price"
-        private const val KEY_VALID = "valid"
+        private const val KEY_VALID_ID = "valid_id"
 
     }
 
@@ -79,12 +85,15 @@ class DatabaseHandler(context: Context) :
                 + KEY_LASTNAME_EMP + " TEXT,"
                 + KEY_EMAIL_EMP + " TEXT,"
                 + KEY_POSITION_ID + " INTEGER,"
-                + KEY_SECURITY_QUESTION_EMP + " TEXT,"
+                + KEY_SECURITY_QUESTION_ID + " INTEGER,"
                 + KEY_SECURITY_ANSWER_EMP + " TEXT,"
                 + KEY_SALT_EMP + " TEXT,"
                 + KEY_PASSWORD_EMP + " TEXT,"
                 + " CONSTRAINT fk_positions"
                 + " FOREIGN KEY(" + KEY_POSITION_ID + ") REFERENCES " + POSITION_TABLE + "(" + KEY_ID + ")"
+                + " ON DELETE CASCADE,"
+                + " CONSTRAINT fk_sec_questions"
+                + " FOREIGN KEY(" + KEY_SECURITY_QUESTION_ID + ") REFERENCES " + SECURITY_QUESTION_TABLE + "(" + KEY_ID + ")"
                 + " ON DELETE CASCADE"
                 + ")")
         db?.execSQL(CREATE_EMPLOYEE_TABLE)
@@ -98,6 +107,16 @@ class DatabaseHandler(context: Context) :
                 + KEY_ID + " INTEGER PRIMARY KEY,"
                 + KEY_VEHICLE_TYPE + " TEXT" + ")")
         db?.execSQL(CREATE_VEHICLE_TYPE_TABLE)
+
+        val CREATE_VALIDITY_TABLE = ("CREATE TABLE " + VALIDITY_TABLE + "("
+                + KEY_ID + " INTEGER PRIMARY KEY,"
+                + KEY_VALIDITY + " TEXT" + ")")
+        db?.execSQL(CREATE_VALIDITY_TABLE)
+
+        val CREATE_SECURITY_QUESTION_TABLE = ("CREATE TABLE " + SECURITY_QUESTION_TABLE + "("
+                + KEY_ID + " INTEGER PRIMARY KEY,"
+                + KEY_SECURITY_QUESTION + " TEXT" + ")")
+        db?.execSQL(CREATE_SECURITY_QUESTION_TABLE)
 
         val CREATE_CLIENT_TABLE = ("CREATE TABLE " + CLIENT_TABLE + "("
                 + KEY_ID + " INTEGER PRIMARY KEY,"
@@ -119,12 +138,15 @@ class DatabaseHandler(context: Context) :
                 + KEY_MODEL_VEHICLE + " TEXT,"
                 + KEY_DATE + " TEXT,"
                 + KEY_PRICE + " REAL,"
-                + KEY_VALID + " INTEGER,"
+                + KEY_VALID_ID + " INTEGER,"
                 + " CONSTRAINT fk_clients"
                 + " FOREIGN KEY(" + KEY_CLIENT_ID + ") REFERENCES " + CLIENT_TABLE + "(" + KEY_ID + ")"
                 + " ON DELETE CASCADE,"
                 + " CONSTRAINT fk_vehicle_types"
                 + " FOREIGN KEY(" + KEY_TYPE_VEHICLE_ID + ") REFERENCES " + VEHICLE_TYPE_TABLE + "(" + KEY_ID + ")"
+                + " ON DELETE CASCADE,"
+                + " CONSTRAINT fk_validity_options"
+                + " FOREIGN KEY(" + KEY_VALID_ID + ") REFERENCES " + VALIDITY_TABLE + "(" + KEY_ID + ")"
                 + " ON DELETE CASCADE"
                 + ")")
         db?.execSQL(CREATE_VEHICLE_TABLE)
@@ -135,12 +157,33 @@ class DatabaseHandler(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS $CLIENT_TABLE")
         db.execSQL("DROP TABLE IF EXISTS $VEHICLE_TABLE")
         db.execSQL("DROP TABLE IF EXISTS $POSITION_TABLE")
+        db.execSQL("DROP TABLE IF EXISTS $VEHICLE_TYPE_TABLE")
+        db.execSQL("DROP TABLE IF EXISTS $VALIDITY_TABLE")
+        db.execSQL("DROP TABLE IF EXISTS $SECURITY_QUESTION_TABLE")
         onCreate(db)
     }
 
     /**
      * Function to insert data
      */
+
+    fun addSecurityQuestion(securityQuestion: SecurityQuestion): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(KEY_SECURITY_QUESTION, securityQuestion.securityQuestion)
+        val success = db.insert(SECURITY_QUESTION_TABLE, null, contentValues)
+        db.close()
+        return success
+    }
+
+    fun addValidity(validity: Validity): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(KEY_VALIDITY, validity.validity)
+        val success = db.insert(VALIDITY_TABLE, null, contentValues)
+        db.close()
+        return success
+    }
 
     fun addPosition(position: Position): Long {
         val db = this.writableDatabase
@@ -171,6 +214,8 @@ class DatabaseHandler(context: Context) :
         db.close()
         return success
     }
+
+
 
     fun addVehicleType(vehicleType: VehicleType): Long {
         val db = this.writableDatabase
@@ -203,6 +248,31 @@ class DatabaseHandler(context: Context) :
         return success
     }
 
+    fun getSecurityQuestions(): MutableList<String> {
+        val securityQuestions = mutableListOf<String>()
+        val securityQuestionsQuery = "SELECT $KEY_SECURITY_QUESTION FROM $SECURITY_QUESTION_TABLE"
+
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+
+        try {
+            cursor = db.rawQuery(securityQuestionsQuery, null)
+        } catch (e: SQLException) {
+            db.execSQL(securityQuestionsQuery)
+            return ArrayList()
+        }
+
+        var securityQuestion: String
+        if (cursor.moveToFirst()) {
+            do {
+                securityQuestion = cursor.getString(cursor.getColumnIndexOrThrow(
+                    KEY_SECURITY_QUESTION))
+                securityQuestions.add(securityQuestion)
+            } while (cursor.moveToNext())
+        }
+        return securityQuestions
+    }
+
     fun getVehicleTypes(): MutableList<String> {
         val vehicleTypes = mutableListOf<String>()
         val vehicleTypesQuery = "SELECT $KEY_VEHICLE_TYPE FROM $VEHICLE_TYPE_TABLE"
@@ -225,6 +295,30 @@ class DatabaseHandler(context: Context) :
             } while (cursor.moveToNext())
         }
         return vehicleTypes
+    }
+
+    fun getValidityOptions(): MutableList<String> {
+        val validityOptions = mutableListOf<String>()
+        val validityQuery = "SELECT $KEY_VALIDITY FROM $VALIDITY_TABLE"
+
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+
+        try {
+            cursor = db.rawQuery(validityQuery, null)
+        } catch (e: SQLException) {
+            db.execSQL(validityQuery)
+            return ArrayList()
+        }
+
+        var validity: String
+        if (cursor.moveToFirst()) {
+            do {
+                validity = cursor.getString(cursor.getColumnIndexOrThrow(KEY_VALIDITY))
+                validityOptions.add(validity)
+            } while (cursor.moveToNext())
+        }
+        return validityOptions
     }
 
     fun getPositions(): MutableList<String> {
@@ -254,6 +348,20 @@ class DatabaseHandler(context: Context) :
     fun getIdByPosition(position: String): Int {
         val args = listOf(position).toTypedArray()
         val pinQuery = "SELECT $KEY_ID FROM $POSITION_TABLE WHERE $KEY_POSITION=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(pinQuery, args)
+        var id = 0
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
+            } while (cursor.moveToNext())
+        }
+        return id
+    }
+
+    fun getIdBySecurityQuestion(securityQuestion: String): Int {
+        val args = listOf(securityQuestion).toTypedArray()
+        val pinQuery = "SELECT $KEY_ID FROM $SECURITY_QUESTION_TABLE WHERE $KEY_SECURITY_QUESTION=?"
         val db = this.readableDatabase
         val cursor = db.rawQuery(pinQuery, args)
         var id = 0
@@ -318,6 +426,22 @@ class DatabaseHandler(context: Context) :
         return VehicleType(id, vehicleType)
     }
 
+    fun getValidityByVehicle(vehicle: Vehicle): Validity {
+        val vehicleQuery = "SELECT * FROM $VEHICLE_TABLE" +
+                " INNER JOIN $VALIDITY_TABLE ON $VEHICLE_TABLE.$KEY_VALID_ID = $VALIDITY_TABLE.$KEY_ID WHERE $VALIDITY_TABLE.$KEY_ID=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(vehicleQuery, arrayOf(vehicle.validityId.toString()))
+        var id = 0
+        var validity = 0
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID_ID))
+                validity = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALIDITY))
+            } while (cursor.moveToNext())
+        }
+        return Validity(id, validity)
+    }
+
 
 
     fun getPositionByEmployee(employee: Employee): Position {
@@ -336,8 +460,22 @@ class DatabaseHandler(context: Context) :
         return Position(id, position)
     }
 
-
-
+    fun getSecurityQuestionByEmployee(employee: Employee): SecurityQuestion {
+        val positionQuery = "SELECT * FROM $EMPLOYEE_TABLE" +
+                " INNER JOIN $SECURITY_QUESTION_TABLE ON $EMPLOYEE_TABLE.$KEY_SECURITY_QUESTION_ID = $SECURITY_QUESTION_TABLE.$KEY_ID WHERE $SECURITY_QUESTION_TABLE.$KEY_ID=?"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(positionQuery, arrayOf(employee.securityQuestionId.toString()))
+        var id = 0
+        var securityQuestion = ""
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_SECURITY_QUESTION_ID))
+                securityQuestion = cursor.getString(cursor.getColumnIndexOrThrow(
+                    KEY_SECURITY_QUESTION))
+            } while (cursor.moveToNext())
+        }
+        return SecurityQuestion(id,securityQuestion)
+    }
 
     fun addEmployee(emp: Employee): Long {
         val db = this.writableDatabase
@@ -349,7 +487,7 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_LASTNAME_EMP, emp.lastName)
         contentValues.put(KEY_EMAIL_EMP, emp.email)
         contentValues.put(KEY_POSITION_ID, emp.positionId)
-        contentValues.put(KEY_SECURITY_QUESTION_EMP, emp.securityQuestion)
+        contentValues.put(KEY_SECURITY_QUESTION_ID, emp.securityQuestionId)
         contentValues.put(KEY_SECURITY_ANSWER_EMP, emp.securityAnswer)
         contentValues.put(KEY_SALT_EMP, emp.salt)
         contentValues.put(KEY_PASSWORD_EMP, emp.password)
@@ -372,7 +510,7 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_LASTNAME_EMP, emp.lastName) // EmpModelClass Email
         contentValues.put(KEY_EMAIL_EMP, emp.email)
         contentValues.put(KEY_POSITION_ID, emp.positionId)
-        contentValues.put(KEY_SECURITY_QUESTION_EMP, emp.securityQuestion)
+        contentValues.put(KEY_SECURITY_QUESTION_ID, emp.securityQuestionId)
         contentValues.put(KEY_SECURITY_ANSWER_EMP, emp.securityAnswer)
         contentValues.put(KEY_SALT_EMP, emp.salt)
         contentValues.put(KEY_PASSWORD_EMP, emp.password)
@@ -456,7 +594,7 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_MODEL_VEHICLE, vehicle.model)
         contentValues.put(KEY_DATE, vehicle.date)
         contentValues.put(KEY_PRICE, vehicle.price)
-        contentValues.put(KEY_VALID, vehicle.isValid)
+        contentValues.put(KEY_VALID_ID, vehicle.validityId)
 
         val success = db.insert(VEHICLE_TABLE, null, contentValues)
         db.close()
@@ -476,7 +614,7 @@ class DatabaseHandler(context: Context) :
         contentValues.put(KEY_MODEL_VEHICLE, vehicle.model)
         contentValues.put(KEY_DATE, vehicle.date)
         contentValues.put(KEY_PRICE, vehicle.price)
-        contentValues.put(KEY_VALID, vehicle.isValid)
+        contentValues.put(KEY_VALID_ID, vehicle.validityId)
 
         val success = db.update(VEHICLE_TABLE, contentValues, KEY_ID + "=" + vehicle.id, null)
         db.close()
@@ -515,7 +653,7 @@ class DatabaseHandler(context: Context) :
         var lastName: String
         var email: String
         var positionId: Int
-        var securityQuestion: String
+        var securityQuestionId: Int
         var securityAnswer: String
         var salt: String
         var password: String
@@ -529,9 +667,9 @@ class DatabaseHandler(context: Context) :
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
                 positionId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION_ID))
-                securityQuestion = cursor.getString(
+                securityQuestionId = cursor.getInt(
                     cursor.getColumnIndexOrThrow(
-                        KEY_SECURITY_QUESTION_EMP
+                        KEY_SECURITY_QUESTION_ID
                     )
                 )
                 securityAnswer = cursor.getString(
@@ -550,7 +688,7 @@ class DatabaseHandler(context: Context) :
                     lastName = lastName,
                     email = email,
                     positionId = positionId,
-                    securityQuestion = securityQuestion,
+                    securityQuestionId = securityQuestionId,
                     securityAnswer = securityAnswer,
                     salt = salt,
                     password = password
@@ -664,18 +802,24 @@ class DatabaseHandler(context: Context) :
         return Client(id, pin, firstName, middleName, lastName)
     }
 
-    fun getIsValidByLicensePlate(licensePlate: String): Boolean {
+    fun getValidityByLicensePlate(licensePlate: String): Validity {
         val args = listOf(licensePlate).toTypedArray()
-        val pinQuery = "SELECT $KEY_VALID FROM $VEHICLE_TABLE WHERE $KEY_LICENSE_PLATE_VEHICLE=?"
+        /*
+        val vehicleQuery = "SELECT * FROM $VEHICLE_TABLE" +
+                " INNER JOIN $CLIENT_TABLE ON $VEHICLE_TABLE.$KEY_CLIENT_ID = $CLIENT_TABLE.$KEY_ID WHERE $CLIENT_TABLE.$KEY_ID=?"
+         */
+        val pinQuery = "SELECT * FROM $VEHICLE_TABLE WHERE $KEY_LICENSE_PLATE_VEHICLE=?"
         val db = this.readableDatabase
         val cursor = db.rawQuery(pinQuery, args)
-        var isValid = false
+        var id = 0
+        var validity = 0
         if (cursor.moveToFirst()) {
             do {
-                if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID_ID))
+                validity = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALIDITY))
             } while (cursor.moveToNext())
         }
-        return isValid
+        return Validity(id, validity)
     }
 
     fun getClientByPIN(PIN: String): Client {
@@ -738,7 +882,7 @@ class DatabaseHandler(context: Context) :
         var lastName = ""
         var email = ""
         var positionId = 0
-        var securityQuestion = ""
+        var securityQuestionId = 0
         var securityAnswer = ""
         var salt = ""
         var password = ""
@@ -751,9 +895,9 @@ class DatabaseHandler(context: Context) :
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
                 positionId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION_ID))
-                securityQuestion = cursor.getString(
+                securityQuestionId = cursor.getInt(
                     cursor.getColumnIndexOrThrow(
-                        KEY_SECURITY_QUESTION_EMP
+                        KEY_SECURITY_QUESTION_ID
                     )
                 )
                 securityAnswer = cursor.getString(
@@ -776,7 +920,7 @@ class DatabaseHandler(context: Context) :
             lastName,
             email,
             positionId,
-            securityQuestion,
+            securityQuestionId,
             securityAnswer,
             salt,
             password
@@ -795,7 +939,7 @@ class DatabaseHandler(context: Context) :
         var lastName = ""
         var email = ""
         var positionId = 0
-        var securityQuestion = ""
+        var securityQuestionId = 0
         var securityAnswer = ""
         var salt = ""
         var password = ""
@@ -808,9 +952,9 @@ class DatabaseHandler(context: Context) :
                 lastName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LASTNAME_EMP))
                 email = cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL_EMP))
                 positionId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION_ID))
-                securityQuestion = cursor.getString(
+                securityQuestionId = cursor.getInt(
                     cursor.getColumnIndexOrThrow(
-                        KEY_SECURITY_QUESTION_EMP
+                        KEY_SECURITY_QUESTION_ID
                     )
                 )
                 securityAnswer = cursor.getString(
@@ -833,7 +977,7 @@ class DatabaseHandler(context: Context) :
             lastName,
             email,
             positionId,
-            securityQuestion,
+            securityQuestionId,
             securityAnswer,
             salt,
             password
@@ -856,7 +1000,7 @@ class DatabaseHandler(context: Context) :
         var model = ""
         var date = ""
         var price = 0.0
-        var isValid = false
+        var validityId = 0
         if (cursor.moveToFirst()) {
             do {
                 id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
@@ -873,7 +1017,7 @@ class DatabaseHandler(context: Context) :
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
                 price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
-                if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+                validityId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID_ID))
             } while (cursor.moveToNext())
         }
        /* if (type == "") {
@@ -896,7 +1040,7 @@ class DatabaseHandler(context: Context) :
             model,
             date,
             price,
-            isValid
+            validityId
         )
     }
 
@@ -916,7 +1060,7 @@ class DatabaseHandler(context: Context) :
         var model = ""
         var date = ""
         var price = 0.0
-        var isValid = false
+        var validityId = 0
         if (cursor.moveToFirst()) {
             do {
                 id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
@@ -933,7 +1077,7 @@ class DatabaseHandler(context: Context) :
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
                 price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
-                if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+                validityId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID_ID))
             } while (cursor.moveToNext())
         }
         if (VIN == "") {
@@ -958,13 +1102,12 @@ class DatabaseHandler(context: Context) :
             model,
             date,
             price,
-            isValid
+            validityId
         )
     }
 
     fun getVehicleByRegistrationCertificate(
-        registrationCertificate: String,
-        context: Context
+        registrationCertificate: String
     ): Vehicle? {
         val args = listOf(registrationCertificate).toTypedArray()
         val pinQuery = "SELECT * FROM $VEHICLE_TABLE WHERE $KEY_REGISTRATION_CERTIFICATE_VEHICLE=?"
@@ -981,7 +1124,7 @@ class DatabaseHandler(context: Context) :
         var model = ""
         var date = ""
         var price = 0.0
-        var isValid = false
+        var validityId = 0
         if (cursor.moveToFirst()) {
             do {
                 id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
@@ -998,7 +1141,7 @@ class DatabaseHandler(context: Context) :
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
                 price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
-                if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+                validityId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID_ID))
             } while (cursor.moveToNext())
         }
         if (registrationCertificate == "") {
@@ -1023,7 +1166,7 @@ class DatabaseHandler(context: Context) :
             model,
             date,
             price,
-            isValid
+            validityId
         )
     }
 
@@ -1076,7 +1219,7 @@ class DatabaseHandler(context: Context) :
         return licensePlates
     }
 
-    fun getAllVehicles(context: Context): ArrayList<Vehicle> {
+    fun getAllVehicles(): ArrayList<Vehicle> {
         val vehicleList = ArrayList<Vehicle>()
 
         val selectQuery = "SELECT * FROM $VEHICLE_TABLE"
@@ -1102,7 +1245,7 @@ class DatabaseHandler(context: Context) :
         var model: String
         var date: String
         var price: Double
-        var isValid = false
+        var validityId: Int
 
         if (cursor.moveToFirst()) {
             do {
@@ -1120,7 +1263,8 @@ class DatabaseHandler(context: Context) :
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
                 price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
-                if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+                validityId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID_ID))
+
 
                 // val typeVehicle = VehicleTypes.values().first { context.getString(it.id) == type }
                 val vehicle = Vehicle(
@@ -1135,7 +1279,7 @@ class DatabaseHandler(context: Context) :
                     model,
                     date,
                     price,
-                    isValid
+                    validityId
                 )
                 vehicleList.add(vehicle)
 
@@ -1164,7 +1308,7 @@ class DatabaseHandler(context: Context) :
         var model: String
         var date: String
         var price: Double
-        var isValid = false
+        var validityId: Int
 
         if (cursor.moveToFirst()) {
             do {
@@ -1182,7 +1326,8 @@ class DatabaseHandler(context: Context) :
                 model = cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODEL_VEHICLE))
                 date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
                 price = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_PRICE))
-                if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID)) == 1) isValid = true
+                validityId = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VALID_ID))
+
 
                 // val typeVehicle = VehicleTypes.values().first { context.getString(it.id) == type }
                 val vehicle = Vehicle(
@@ -1197,7 +1342,7 @@ class DatabaseHandler(context: Context) :
                     model,
                     date,
                     price,
-                    isValid
+                    validityId
                 )
                 vehicleList.add(vehicle)
 
@@ -1254,12 +1399,12 @@ class DatabaseHandler(context: Context) :
 
     fun checkPasswordReset(
         nickname: String,
-        securityQuestion: String,
+        securityQuestionId: Int,
         securityAnswer: String
     ): Boolean {
-        val args = listOf(nickname, securityQuestion, securityAnswer).toTypedArray()
+        val args = listOf(nickname, securityQuestionId.toString(), securityAnswer).toTypedArray()
         val nicknamesQuery =
-            "SELECT * FROM $EMPLOYEE_TABLE WHERE $KEY_NICKNAME_EMP=? AND $KEY_SECURITY_QUESTION_EMP=? AND $KEY_SECURITY_ANSWER_EMP=?"
+            "SELECT * FROM $EMPLOYEE_TABLE WHERE $KEY_NICKNAME_EMP=? AND $KEY_SECURITY_QUESTION_ID=? AND $KEY_SECURITY_ANSWER_EMP=?"
         val db = this.readableDatabase
         val cursor = db.rawQuery(nicknamesQuery, args)
         return cursor.count > 0

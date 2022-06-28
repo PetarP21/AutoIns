@@ -16,10 +16,8 @@ import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentShowClientsBinding
 import com.example.diplomna.models.Client
-import com.example.diplomna.models.Vehicle
 import com.example.diplomna.util.BaseFragment
 import com.example.diplomna.util.ClientAdapter
-import java.util.regex.Pattern
 
 class ShowClientsFragment : BaseFragment() {
     private lateinit var binding: FragmentShowClientsBinding
@@ -36,9 +34,28 @@ class ShowClientsFragment : BaseFragment() {
         )
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbarClient)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        deleteUnusedClients()
         setHasOptionsMenu(true)
         setupListOfDataIntoRecyclerView()
         return binding.root
+    }
+
+    private fun deleteUnusedClients() {
+        val databaseHandler = DatabaseHandler(requireContext())
+        val clients = databaseHandler.getAllClients()
+        val vehicles = databaseHandler.getAllVehicles()
+        var counter = 0
+        for (client in clients) {
+            for (vehicle in vehicles) {
+                if (client.id == vehicle.clientId) {
+                    counter++
+                }
+            }
+            if (counter < 1) {
+                databaseHandler.deleteClient(client)
+            }
+            counter = 0
+        }
     }
 
     private fun setupListOfDataIntoRecyclerView() {
@@ -73,22 +90,22 @@ class ShowClientsFragment : BaseFragment() {
          The resource will be inflated, adding all top-level views to the screen.*/
         updateDialog.setContentView(R.layout.client_update)
 
-        val pin = updateDialog.findViewById<EditText>(R.id.pin_editText_update)
+        // val pin = updateDialog.findViewById<EditText>(R.id.pin_editText_update)
         val firstName = updateDialog.findViewById<EditText>(R.id.firstName_editText_update)
         val middleName = updateDialog.findViewById<EditText>(R.id.middleName_editText_update)
         val lastName = updateDialog.findViewById<EditText>(R.id.lastName_editText_update)
         val updateButton = updateDialog.findViewById<TextView>(R.id.client_update_textView)
         val cancelButton = updateDialog.findViewById<TextView>(R.id.client_cancel_textView)
 
-        pin.setText(client.PIN)
-        val oldPin = client.PIN
+        /*  pin.setText(client.PIN)
+          val oldPin = client.PIN */
         firstName.setText(client.firstName)
         middleName.setText(client.middleName)
         lastName.setText(client.lastName)
 
         updateButton.setOnClickListener {
 
-            val pin_str = pin.text.toString()
+            // val pin_str = pin.text.toString()
             val firstName = firstName.text.toString()
             val middleName = middleName.text.toString()
             val lastName = lastName.text.toString()
@@ -96,48 +113,25 @@ class ShowClientsFragment : BaseFragment() {
 
             val databaseHandler = DatabaseHandler(requireContext())
 
-            if (pin_str.isNotEmpty() && firstName.isNotEmpty() && middleName.isNotEmpty() && lastName.isNotEmpty()) {
-                var isPINValid = false
-                val patternPIN = Pattern.compile("[0-9]{2}[0145][0-9][0-3][0-9]{5}")
-                if (patternPIN.matcher(pin_str).matches()) {
-                    if(databaseHandler.checkClientByPIN(pin_str) != null && pin_str != client.PIN) {
-                        pin.error = "Вече съществува клиент с ЕГН: $pin_str"
-                    } else {
-                        isPINValid = true
-                    }
-                } else {
-                    pin.error = "Невалидно ЕГН"
-                }
-                if (isPINValid){
+            if (firstName.isNotEmpty() && middleName.isNotEmpty() && lastName.isNotEmpty()) {
                 val status =
                     databaseHandler.updateClient(
                         Client(
                             client.id,
-                            pin_str,
+                            client.PIN,
                             firstName,
                             middleName,
                             lastName
                         )
                     )
                 if (status > -1) {
-                    Toast.makeText(requireContext(), "Записът е редактиран.", Toast.LENGTH_LONG).show()
-                    if(oldPin != pin_str){
-                        val age = calcAge(pin_str)
-                        val vehicles = databaseHandler.getVehiclesByClientId(client.id,requireContext())
-                        for(vehicle in vehicles){
-                            val engine = vehicle.engine
-                            val price = calcPrice(engine,age)
-                            databaseHandler.updateVehicle(
-                                Vehicle(vehicle.id,vehicle.clientId,vehicle.licencePlate,vehicle.VIN,vehicle.registrationCertificate,
-                                vehicle.engine,vehicle.vehicleTypeId,vehicle.brand,vehicle.model,vehicle.date,price,vehicle.isValid)
-                            )
-                        }
-                    }
+                    Toast.makeText(requireContext(), "Записът е редактиран.", Toast.LENGTH_LONG)
+                        .show()
+
 
                     setupListOfDataIntoRecyclerView()
 
                     updateDialog.dismiss() // Dialog will be dismissed
-                }
                 }
             } else {
                 Toast.makeText(
@@ -198,7 +192,8 @@ class ShowClientsFragment : BaseFragment() {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.item_menu, menu)
-        val searchView = SearchView((activity as MainActivity).supportActionBar?.themedContext ?: context)
+        val searchView =
+            SearchView((activity as MainActivity).supportActionBar?.themedContext ?: context)
         searchView.queryHint = "Въведете ЕГН"
         menu.findItem(R.id.action_search).apply {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)

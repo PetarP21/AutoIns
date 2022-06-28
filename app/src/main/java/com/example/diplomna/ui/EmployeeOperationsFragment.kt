@@ -18,8 +18,8 @@ import androidx.navigation.ui.NavigationUI
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentEmployeeOperationsBinding
 import com.example.diplomna.models.Client
+import com.example.diplomna.models.ValidityOptions
 import com.example.diplomna.models.Vehicle
-import com.example.diplomna.models.VehicleType
 import com.example.diplomna.models.VehicleTypes
 import com.example.diplomna.util.BaseFragment
 import com.example.diplomna.util.SharedPref
@@ -226,7 +226,9 @@ class EmployeeOperationsFragment : BaseFragment() {
 
                 val patternLicensePlate = Pattern.compile("[ABEKMHOPCTYX]{1,2}[0-9]{4}[ABEKMHOPCTYX]{2}")
                 if (patternLicensePlate.matcher(licencePlate).matches()) {
-                    if (!databaseHandler.getIsValidByLicensePlate(licencePlate)) {
+                    val vehicle = databaseHandler.getVehicleByLicensePlate(licencePlate)
+                    val validity = databaseHandler.getValidityByVehicle(vehicle)
+                    if (validity.validity.toString() != getString(ValidityOptions.YES.id)) {
                         isLicensePlateValid = true
                     } else {
                         Toast.makeText(
@@ -262,7 +264,7 @@ class EmployeeOperationsFragment : BaseFragment() {
                 }
 
                 if(regCertificate.count() == 9){
-                    if(databaseHandler.getVehicleByRegistrationCertificate(regCertificate,requireContext()) != null){
+                    if(databaseHandler.getVehicleByRegistrationCertificate(regCertificate) != null){
                         binding.registrationCertificate.editText?.error = "Вече съществува МПС с такъв номер."
                     } else {
                         isRegCertificateValid = true
@@ -273,11 +275,15 @@ class EmployeeOperationsFragment : BaseFragment() {
 
                 if(isPINValid && isLicensePlateValid && isRegCertificateValid && isVINValid){
                     var isNewClient = false
+                    var counter = 0
                     val clients = databaseHandler.getAllClients()
                     for(client in clients){
-                        if (client.PIN != pin){
-                            isNewClient = true
+                        if(client.PIN == pin) {
+                            counter++
                         }
+                    }
+                    if(clients.isEmpty() || counter == 0){
+                        isNewClient = true
                     }
                     if(isNewClient){
                         databaseHandler.addClient(
@@ -297,7 +303,7 @@ class EmployeeOperationsFragment : BaseFragment() {
                             model,
                             date,
                             price.toDouble(),
-                            true
+                            getString(ValidityOptions.YES.id).toInt()
                         )
                     )
                     if (statusVehicle > -1) {

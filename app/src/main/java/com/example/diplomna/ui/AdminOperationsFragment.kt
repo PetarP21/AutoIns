@@ -114,7 +114,8 @@ class AdminOperationsFragment : Fragment() {
                         lastName,
                         email,
                         databaseHandler.getIdByPosition(position),
-                        getString(SecurityQuestions.PET.id),
+                        databaseHandler.getIdBySecurityQuestion(getString(SecurityQuestions.PET.id)),
+                      //  getString(SecurityQuestions.PET.id).toInt(),
                         SHA256.encrypt(salt + "admin"),
                         salt,
                         SHA256.encrypt(salt + "admin")

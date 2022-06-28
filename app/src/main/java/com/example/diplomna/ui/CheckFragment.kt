@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentCheckBinding
+import com.example.diplomna.models.ValidityOptions
 import java.util.regex.Pattern
 
 class CheckFragment : Fragment() {
@@ -38,7 +39,12 @@ class CheckFragment : Fragment() {
             if (patternLicensePlate.matcher(licensePlate).matches()) {
                 val vehicle =
                     databaseHandler.getVehicleByLicensePlate(licensePlate)
-                if (vehicle.isValid) {
+                val validity = databaseHandler.getValidityByVehicle(vehicle)
+                var isValid = false
+                if(validity.validity == getString(ValidityOptions.YES.id).toInt()) {
+                    isValid = true
+                }
+                if (isValid) {
                     binding.answer.text =
                         "МПС с регистрационен номер ${vehicle.licencePlate} ИМА валидна застраховка 'Гражданска отговорност'."
                     binding.isValidImage.setImageResource(R.drawable.ic_check)

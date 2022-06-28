@@ -1,6 +1,10 @@
 package com.example.diplomna.models
 
-class Vehicle
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class Vehicle
     (val id : Int,
      val clientId: Int,
      val licencePlate: String,
@@ -12,4 +16,4 @@ class Vehicle
      val model: String,
      val date: String,
      val price: Double,
-     val isValid: Boolean)
+     val validityId: Int) : Parcelable

@@ -15,6 +15,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         addPositions()
         addVehicleTypes()
+        addSecurityQuestions()
+        addValidityOptions()
         addDefaultAdmin()
         invalidateInsurance()
     }
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         val nicknames = databaseHandler.getNicknames()
         val salt = SHA256.salt()
         val admin = Employee(0,"admin","admin","admin","admin","admin",databaseHandler.getIdByPosition("Админ"),
-            "admin",SHA256.encrypt(salt+"admin"),salt,SHA256.encrypt(salt+"admin"))
+            databaseHandler.getIdBySecurityQuestion(getString(SecurityQuestions.JOB.id)),SHA256.encrypt(salt+"admin"),salt,SHA256.encrypt(salt+"admin"))
         if(admin.nickname !in nicknames){
             databaseHandler.addEmployee(admin)
         }
@@ -41,6 +43,28 @@ class MainActivity : AppCompatActivity() {
         for (position in positions){
             if(position !in positionsDb){
                 databaseHandler.addPosition(Position(0,position))
+            }
+        }
+    }
+
+    private fun addValidityOptions(){
+        val databaseHandler = DatabaseHandler(this)
+        val validityOptionsDb = databaseHandler.getValidityOptions()
+        val validityOptions = ValidityOptions.values().map { it.id }.map { getString(it) }
+        for(option in validityOptions){
+            if(option !in validityOptionsDb){
+                databaseHandler.addValidity(Validity(0,option.toInt()))
+            }
+        }
+    }
+
+    private fun addSecurityQuestions(){
+        val databaseHandler = DatabaseHandler(this)
+        val securityQuestionDb = databaseHandler.getSecurityQuestions()
+        val securityQuestions = SecurityQuestions.values().map { it.id }.map { getString(it) }
+        for(securityQuestion in securityQuestions){
+            if(securityQuestion !in securityQuestionDb){
+                databaseHandler.addSecurityQuestion(SecurityQuestion(0,securityQuestion))
             }
         }
     }
@@ -58,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun invalidateInsurance(){
         val db = DatabaseHandler(this)
-        val vehicles = db.getAllVehicles(context = this)
+        val vehicles = db.getAllVehicles()
         val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
         for(vehicle in vehicles){
             val insuranceDate = simpleDateFormat.parse(vehicle.date)
@@ -73,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                     Vehicle(vehicle.id,vehicle.clientId,vehicle.licencePlate,
                         vehicle.VIN,vehicle.registrationCertificate,
                         vehicle.engine,vehicle.vehicleTypeId,vehicle.brand,vehicle.model,
-                        vehicle.date,vehicle.price,isValid = false)
+                        vehicle.date,vehicle.price,getString(ValidityOptions.NO.id).toInt())
                 )
             }
         }

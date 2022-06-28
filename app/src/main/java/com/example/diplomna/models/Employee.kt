@@ -9,7 +9,7 @@ class Employee
      val lastName: String,
      val email: String,
      val positionId : Int,
-     val securityQuestion : String,
+     val securityQuestionId : Int,
      val securityAnswer : String,
      val salt : String,
      val password : String)

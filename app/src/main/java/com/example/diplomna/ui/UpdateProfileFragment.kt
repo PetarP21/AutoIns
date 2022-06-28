@@ -19,6 +19,7 @@ import com.example.diplomna.models.Employee
 import com.example.diplomna.models.SecurityQuestions
 import com.example.diplomna.util.SHA256
 import com.example.diplomna.util.SharedPref
+import java.util.regex.Pattern
 
 class UpdateProfileFragment : Fragment() {
     private lateinit var binding: FragmentUpdateProfileBinding
@@ -92,49 +93,69 @@ class UpdateProfileFragment : Fragment() {
         val databaseHandler = DatabaseHandler(requireContext())
 
         if (oldPassword.isNotEmpty() && newPassword.isNotEmpty() && repeatedPassword.isNotEmpty()) {
-            var arePasswordsEqual = false
-            var isOldPasswordValid = false
-
-            if (newPassword == repeatedPassword) {
-                arePasswordsEqual = true
-            } else {
-                Toast.makeText(requireContext(), "Паролите не съвпадат.", Toast.LENGTH_LONG)
-                    .show()
-            }
-
-            if (SHA256.encrypt(employee.salt + oldPassword) == employee.password) {
-                isOldPasswordValid = true
-            } else {
-                Toast.makeText(requireContext(), "Въведете правилната парола.", Toast.LENGTH_LONG)
-                    .show()
-            }
-
-            if (arePasswordsEqual && isOldPasswordValid) {
-                val status =
-                    databaseHandler.updateEmployee(
-                        Employee(
-                            employee.id,
-                            employee.nickname,
-                            employee.firstName,
-                            employee.middleName,
-                            employee.lastName,
-                            employee.email,
-                            employee.positionId,
-                            employee.securityQuestion,
-                            employee.securityAnswer,
-                            employee.salt,
-                            SHA256.encrypt(employee.salt+newPassword)
-                        )
-                    )
-                if (status > -1) {
-                    Toast.makeText(requireContext(), "Записът е редактиран.", Toast.LENGTH_LONG)
+            val patternPassword = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,16}\$")
+            if (patternPassword.matcher(newPassword).matches()) {
+                var arePasswordsEqual = false
+                var isOldPasswordValid = false
+                if (newPassword == repeatedPassword) {
+                    arePasswordsEqual = true
+                } else {
+                    Toast.makeText(requireContext(), "Паролите не съвпадат.", Toast.LENGTH_LONG)
                         .show()
-                    SharedPref.writeUsername(username)
+                }
+
+                if (SHA256.encrypt(employee.salt + oldPassword) == employee.password) {
+                    isOldPasswordValid = true
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Въведете правилната парола.",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                }
+
+                if (arePasswordsEqual && isOldPasswordValid) {
+                    val status =
+                        databaseHandler.updateEmployee(
+                            Employee(
+                                employee.id,
+                                employee.nickname,
+                                employee.firstName,
+                                employee.middleName,
+                                employee.lastName,
+                                employee.email,
+                                employee.positionId,
+                                employee.securityQuestionId,
+                                employee.securityAnswer,
+                                employee.salt,
+                                SHA256.encrypt(employee.salt + newPassword)
+                            )
+                        )
+                    if (status > -1) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Успешно сменена парола.",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                        binding.oldPassword.editText?.text?.clear()
+                        binding.newPassword.editText?.text?.clear()
+                        binding.newPasswordRepeat.editText?.text?.clear()
+                        SharedPref.writeUsername(username)
+                    }
                 }
             } else {
-                Toast.makeText(context, "Не всички полета са попълнени.", Toast.LENGTH_LONG)
+                Toast.makeText(
+                    context,
+                    "Паролата трябва е с дължина от 8 до 16 символа. Минимум 1 главна буква, 1 малка буква и 1 цифра.",
+                    Toast.LENGTH_LONG
+                )
                     .show()
             }
+        } else {
+            Toast.makeText(context, "Не всички полета са попълнени.", Toast.LENGTH_LONG)
+                .show()
         }
     }
 
@@ -154,7 +175,7 @@ class UpdateProfileFragment : Fragment() {
                         employee.lastName,
                         employee.email,
                         employee.positionId,
-                        securityQuestion,
+                        databaseHandler.getIdBySecurityQuestion(securityQuestion),
                         SHA256.encrypt(employee.salt + securityAnswer),
                         employee.salt,
                         employee.password
@@ -212,7 +233,7 @@ class UpdateProfileFragment : Fragment() {
                             lastName,
                             email,
                             employee.positionId,
-                            employee.securityQuestion,
+                            employee.securityQuestionId,
                             employee.securityAnswer,
                             employee.salt,
                             employee.password
@@ -223,10 +244,10 @@ class UpdateProfileFragment : Fragment() {
                         .show()
                     SharedPref.writeUsername(username)
                 }
-            } else {
-                Toast.makeText(context, "Не всички полета са попълнени.", Toast.LENGTH_LONG)
-                    .show()
             }
+        } else {
+            Toast.makeText(context, "Не всички полета са попълнени.", Toast.LENGTH_LONG)
+                .show()
         }
     }
 }

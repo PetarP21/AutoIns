@@ -28,5 +28,7 @@
     <string name="fatherQuestion">Родното място на баща Ви?</string>
     <string name="admin">Админ</string>
     <string name="insurer">Застраховател</string>
+    <string name="yes">1</string>
+    <string name="no">0</string>
 
 </resources>
