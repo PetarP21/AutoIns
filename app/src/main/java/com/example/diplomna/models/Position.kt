@@ -1,6 +1,6 @@
 package com.example.diplomna.models
 
-class Position(
+data class Position(
     val id: Int,
     val position: String
 )

@@ -11,15 +11,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.diplomna.MainActivity
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentShowClientsBinding
 import com.example.diplomna.models.Client
-import com.example.diplomna.util.BaseFragment
 import com.example.diplomna.util.ClientAdapter
 
-class ShowClientsFragment : BaseFragment() {
+class ShowClientsFragment : Fragment() {
     private lateinit var binding: FragmentShowClientsBinding
     private lateinit var clientAdapter: ClientAdapter
     override fun onCreateView(

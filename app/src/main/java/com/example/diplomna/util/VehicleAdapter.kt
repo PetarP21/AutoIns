@@ -79,12 +79,13 @@ class VehicleAdapter(val context: Context, val items: ArrayList<Vehicle>) : Recy
         holder.clientName.text = "Клиент: ${client.firstName} ${client.lastName}"
         holder.VIN.text = "Идентификационен номер: "+item.VIN
         holder.registrationCertificate.text = "№ на рег. сертификат: "+item.registrationCertificate
-        holder.engine.text = "Обем на двигателя: "+item.engine.toString()
+        holder.engine.text = "Обем на двигателя: "+item.engine.toString() + " см3"
         holder.type.text = "Вид: "+ vehicleType.vehicleType
         holder.brand.text = "Марка: "+item.brand
         holder.model.text = "Модел: "+item.model
         holder.date.text = "Дата на сключване: "+item.date
-        holder.price.text = "Застрахователна премия: "+item.price.toString()
+        val price = String.format("%.2f",item.price)
+        holder.price.text = "Застрахователна премия: "+price+" лв."
         if(validity.validity == context.getString(ValidityOptions.YES.id).toInt()) {
             holder.isValid.text = "Валидност: Валидна"
         } else {

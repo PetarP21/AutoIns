@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.example.diplomna.models.*
 import com.example.diplomna.util.SHA256
+import com.example.diplomna.util.SharedPref
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -19,6 +20,14 @@ class MainActivity : AppCompatActivity() {
         addValidityOptions()
         addDefaultAdmin()
         invalidateInsurance()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val isRemembered = SharedPref.readBoolean("CHECKBOX")
+        if(!isRemembered){
+            SharedPref.clear()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -87,12 +96,19 @@ class MainActivity : AppCompatActivity() {
         for(vehicle in vehicles){
             val insuranceDate = simpleDateFormat.parse(vehicle.date)
             val currentDate = Date()
+            val calendar = Calendar.getInstance()
+                calendar.time = currentDate
+            val year = calendar.get(Calendar.YEAR)
+            var daysBetween = 365
+            if(isYearLeap(year) || isYearLeap(year+1)){
+                daysBetween = 366
+            }
             val diff: Long = currentDate.time - insuranceDate.time
             val seconds = diff / 1000
             val minutes = seconds / 60
             val hours = minutes / 60
             val days = hours / 24
-            if(days>365){
+            if(days>daysBetween){
                 db.updateVehicle(
                     Vehicle(vehicle.id,vehicle.clientId,vehicle.licencePlate,
                         vehicle.VIN,vehicle.registrationCertificate,
@@ -101,5 +117,16 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    private fun isYearLeap(year: Int): Boolean {
+        val leap: Boolean = if (year % 4 == 0) {
+            if (year % 100 == 0) {
+                year % 400 == 0
+            } else
+                true
+        } else
+            false
+        return leap
     }
 }

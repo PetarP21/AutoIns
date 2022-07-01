@@ -26,9 +26,9 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val databaseHandler = DatabaseHandler(requireContext())
-        val isRemembered = SharedPref.readBoolean("CHECKBOX")
+        SharedPref.readBoolean("CHECKBOX")
         val nickname = SharedPref.readString("NICKNAME")
-        if(isRemembered){
+        if(nickname!=""){
             val positionId = databaseHandler.getPositionIdByNickname(nickname)
             val position = databaseHandler.getPositionById(positionId)
             when(position.position){

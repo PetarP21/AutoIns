@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import com.example.diplomna.R
 import com.example.diplomna.databinding.FragmentCheckBinding
 import com.example.diplomna.models.ValidityOptions
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
 
 class CheckFragment : Fragment() {
@@ -41,12 +43,14 @@ class CheckFragment : Fragment() {
                     databaseHandler.getVehicleByLicensePlate(licensePlate)
                 val validity = databaseHandler.getValidityByVehicle(vehicle)
                 var isValid = false
-                if(validity.validity == getString(ValidityOptions.YES.id).toInt()) {
+                if (validity.validity == getString(ValidityOptions.YES.id).toInt()) {
                     isValid = true
                 }
                 if (isValid) {
+                    val startDateString = vehicle.date
+                    val endDateString = calcEndDate(startDateString)
                     binding.answer.text =
-                        "МПС с регистрационен номер ${vehicle.licencePlate} ИМА валидна застраховка 'Гражданска отговорност'."
+                        "МПС с регистрационен номер ${vehicle.licencePlate} ИМА валидна застраховка 'Гражданска отговорност' до $endDateString включително."
                     binding.isValidImage.setImageResource(R.drawable.ic_check)
                     binding.isValidImage.visibility = View.VISIBLE
                 } else {
@@ -65,5 +69,35 @@ class CheckFragment : Fragment() {
             binding.isValidImage.visibility = View.INVISIBLE
             binding.answer.text = ""
         }
+    }
+
+    private fun calcEndDate(startDateString: String) : String{
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val startDate = simpleDateFormat.parse(startDateString)
+        val oneYearWithoutOneDayInMilliseconds = 31449600000
+        var endDateMilliseconds: Long =
+            startDate.time + oneYearWithoutOneDayInMilliseconds
+        var endDateString = simpleDateFormat.format(Date(endDateMilliseconds))
+        val start = Calendar.getInstance()
+        if (startDate != null) {
+            start.time = startDate
+        }
+        val startYear = start.get(Calendar.YEAR)
+        if (isYearLeap(startYear) || isYearLeap(startYear+1)) {
+            endDateMilliseconds += 86400000
+            endDateString = simpleDateFormat.format(Date(endDateMilliseconds))
+        }
+        return endDateString
+    }
+
+    private fun isYearLeap(year: Int): Boolean {
+        val leap: Boolean = if (year % 4 == 0) {
+            if (year % 100 == 0) {
+                year % 400 == 0
+            } else
+                true
+        } else
+            false
+        return leap
     }
 }

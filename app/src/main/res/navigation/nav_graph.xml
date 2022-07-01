@@ -111,15 +111,18 @@
     <fragment
         android:id="@+id/forgottenPasswordFragment"
         android:name="com.example.diplomna.ui.ForgottenPasswordFragment"
-        android:label="ForgottenPasswordFragment" />
+        android:label="ForgottenPasswordFragment"
+        tools:layout="@layout/fragment_forgotten_password"/>
     <fragment
         android:id="@+id/updateProfileFragment"
         android:name="com.example.diplomna.ui.UpdateProfileFragment"
-        android:label="UpdateProfileFragment" />
+        android:label="UpdateProfileFragment"
+        tools:layout="@layout/fragment_update_profile"/>
     <fragment
         android:id="@+id/updateInsuranceFragment"
         android:name="com.example.diplomna.ui.UpdateInsuranceFragment"
-        android:label="UpdateInsuranceFragment" >
+        android:label="UpdateInsuranceFragment"
+        tools:layout="@layout/fragment_update_insurance">
         <argument
             android:name="vehicle"
             app:argType="com.example.diplomna.models.Vehicle" />

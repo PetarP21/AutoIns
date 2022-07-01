@@ -1,6 +1,6 @@
 package com.example.diplomna.models
 
-class Client
+data class Client
     (val id : Int,
      val PIN: String,
      val firstName: String,

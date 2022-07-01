@@ -1,7 +1,6 @@
 package com.example.diplomna.models
 
-// creating a Data Model Class, without methods
-class Employee
+data class Employee
     (val id : Int,
      val nickname: String,
      val firstName: String,

@@ -1,6 +1,6 @@
 package com.example.diplomna.models
 
-class Validity (
+data class Validity (
     val id: Int,
     val validity: Int
 )

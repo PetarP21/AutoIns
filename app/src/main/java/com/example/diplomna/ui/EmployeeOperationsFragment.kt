@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -21,13 +22,12 @@ import com.example.diplomna.models.Client
 import com.example.diplomna.models.ValidityOptions
 import com.example.diplomna.models.Vehicle
 import com.example.diplomna.models.VehicleTypes
-import com.example.diplomna.util.BaseFragment
 import com.example.diplomna.util.SharedPref
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-class EmployeeOperationsFragment : BaseFragment() {
+class EmployeeOperationsFragment : Fragment() {
     private lateinit var binding: FragmentEmployeeOperationsBinding
 
     override fun onCreateView(
@@ -421,7 +421,7 @@ class EmployeeOperationsFragment : BaseFragment() {
             val engine = binding.engine.editText?.text.toString()
             if (engine != "") {
                 val price = calcPrice(engine.toInt(), age)
-                binding.price.editText?.setText(price.toString())
+                binding.price.editText?.setText(price)
             } else {
                 binding.price.editText?.setText("0")
             }
@@ -429,5 +429,51 @@ class EmployeeOperationsFragment : BaseFragment() {
 
         override fun afterTextChanged(p0: Editable?) {
         }
+    }
+
+    fun calcAge(PIN: String): Int {
+        var ageInteger = 0
+        if (PIN.count() == 10) {
+            var year = PIN.substring(0, 2).toInt()
+            var month = PIN.substring(2, 4).toInt()
+            val day = PIN.substring(4, 6).toInt()
+            if (month > 40) {
+                year += 2000
+                month -= 40
+            } else {
+                year += 1900
+            }
+            val dobCalendar = Calendar.getInstance()
+            dobCalendar.set(year, month, day)
+            val today = Calendar.getInstance()
+            ageInteger = today.get(Calendar.YEAR) - dobCalendar.get(Calendar.YEAR);
+            if (today.get(Calendar.MONTH) == dobCalendar.get(Calendar.MONTH)) {
+                if (today.get(Calendar.DAY_OF_MONTH) < dobCalendar.get(Calendar.DAY_OF_MONTH)) {
+                    ageInteger -= 1;
+                }
+            } else if (today.get(Calendar.MONTH) < dobCalendar.get(Calendar.MONTH)) {
+                ageInteger -= 1;
+            }
+        }
+        return ageInteger
+    }
+
+    fun calcPrice(engine: Int, age: Int): String {
+        var price: Double = if (engine < 1200) {
+            250.00
+        } else if (engine < 1600) {
+            252.00
+        } else if (engine < 1800) {
+            260.00
+        } else if (engine < 2000) {
+            272.00
+        } else if (engine < 2500) {
+            334.00
+        } else 361.00
+
+        if (age < 25) {
+            price += 0.80 * price
+        }
+        return String.format("%.2f", price)
     }
 }

@@ -1,6 +1,6 @@
 package com.example.diplomna.models
 
-class SecurityQuestion (
+data class SecurityQuestion (
     val id: Int,
     val securityQuestion: String
 )
